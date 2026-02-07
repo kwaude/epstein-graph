@@ -1,6 +1,6 @@
 # Epstein Files Relationship Analysis Summary
 
-Generated from /Users/lukesmacmini/clawd/projects/epstein-graph/preprocessed/epstein_lite.db
+Generated from preprocessed/epstein_lite.db
 
 
 ## Overview
