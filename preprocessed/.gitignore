@@ -1,0 +1,14 @@
+# Data files - too large for git
+epstein_files/
+.venv/
+
+# Python
+__pycache__/
+*.pyc
+
+# IDE
+.vscode/
+.idea/
+
+# Claude
+.claude/

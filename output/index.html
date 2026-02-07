@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Epstein Files - Relationship Analysis</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #0a0a15 0%, #1a1a2e 50%, #0f0f1a 100%);
+            min-height: 100vh;
+            color: #fff;
+            padding: 40px 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        h1 {
+            font-size: 48px;
+            font-weight: 700;
+            margin-bottom: 16px;
+            background: linear-gradient(135deg, #00d4ff, #7b2fff, #ff006e);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .subtitle {
+            font-size: 20px;
+            color: rgba(255, 255, 255, 0.6);
+            margin-bottom: 48px;
+        }
+        
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 24px;
+            margin-bottom: 48px;
+        }
+        
+        .card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 32px;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            color: inherit;
+            display: block;
+        }
+        
+        .card:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(0, 212, 255, 0.3);
+            transform: translateY(-4px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+        }
+        
+        .card-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+        }
+        
+        .card h2 {
+            font-size: 24px;
+            margin-bottom: 12px;
+        }
+        
+        .card p {
+            color: rgba(255, 255, 255, 0.6);
+            line-height: 1.6;
+        }
+        
+        .card .badge {
+            display: inline-block;
+            padding: 6px 12px;
+            background: linear-gradient(135deg, #00d4ff, #7b2fff);
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-top: 16px;
+        }
+        
+        .card.featured {
+            border-color: rgba(0, 212, 255, 0.3);
+            background: linear-gradient(135deg, rgba(0, 212, 255, 0.1), rgba(123, 47, 255, 0.1));
+        }
+        
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 24px;
+            margin-bottom: 48px;
+        }
+        
+        .stat {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 24px;
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 36px;
+            font-weight: 700;
+            color: #00d4ff;
+        }
+        
+        .stat-label {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.5);
+            margin-top: 8px;
+        }
+        
+        .footer {
+            text-align: center;
+            color: rgba(255, 255, 255, 0.4);
+            font-size: 14px;
+            margin-top: 48px;
+        }
+        
+        @media (max-width: 768px) {
+            .stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Epstein Files</h1>
+        <p class="subtitle">Relationship Network Analysis from DOJ Document Release</p>
+        
+        <div class="stats">
+            <div class="stat">
+                <div class="stat-value">191</div>
+                <div class="stat-label">People Analyzed</div>
+            </div>
+            <div class="stat">
+                <div class="stat-value">1,647</div>
+                <div class="stat-label">Connections</div>
+            </div>
+            <div class="stat">
+                <div class="stat-value">10</div>
+                <div class="stat-label">Clusters Found</div>
+            </div>
+            <div class="stat">
+                <div class="stat-value">60K+</div>
+                <div class="stat-label">Documents Processed</div>
+            </div>
+        </div>
+        
+        <div class="cards">
+            <a href="epstein_3d_threejs.html" class="card featured">
+                <div class="card-icon">🌐</div>
+                <h2>3D Network Explorer</h2>
+                <p>Immersive Three.js visualization with glow effects, cluster coloring, and smooth camera controls. Click nodes to focus, search to highlight.</p>
+                <span class="badge">✨ Featured</span>
+            </a>
+            
+            <a href="epstein_network.html" class="card">
+                <div class="card-icon">🕸️</div>
+                <h2>Force-Directed Graph</h2>
+                <p>Interactive 2D network graph with physics simulation. Drag nodes, zoom, and explore connections between people in the documents.</p>
+            </a>
+            
+            <a href="epstein_3d_embedding.html" class="card">
+                <div class="card-icon">📊</div>
+                <h2>UMAP Embedding</h2>
+                <p>3D scatter plot using UMAP dimensionality reduction. People who appear together are positioned closer in space.</p>
+            </a>
+            
+            <a href="summary.md" class="card">
+                <div class="card-icon">📋</div>
+                <h2>Analysis Summary</h2>
+                <p>Detailed report with top connected people, strongest relationships, cluster analysis, and key findings from the network.</p>
+            </a>
+        </div>
+        
+        <div class="footer">
+            <p>Data source: DOJ Epstein Files (EFTA Datasets 1-12)</p>
+            <p>NER extraction via spaCy | Visualization built with Three.js, PyVis, Plotly</p>
+        </div>
+    </div>
+</body>
+</html>

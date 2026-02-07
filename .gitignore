@@ -1,0 +1,22 @@
+# Virtual environment
+venv/
+.venv/
+__pycache__/
+*.pyc
+
+# Data files (too large for git)
+preprocessed/*.db
+data/raw/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Credentials
+*.env
+.env.*

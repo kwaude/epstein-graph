@@ -1,0 +1,4630 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Epstein Email Network - 3D Visualization</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            background: #0a0a15;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+        #info {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            color: #fff;
+            background: rgba(0,0,0,0.7);
+            padding: 15px;
+            border-radius: 8px;
+            max-width: 300px;
+            z-index: 100;
+        }
+        #info h2 {
+            margin: 0 0 10px 0;
+            font-size: 18px;
+        }
+        #info p {
+            margin: 5px 0;
+            font-size: 12px;
+            color: #aaa;
+        }
+        #tooltip {
+            position: absolute;
+            background: rgba(0,0,0,0.85);
+            color: #fff;
+            padding: 10px 15px;
+            border-radius: 5px;
+            font-size: 13px;
+            pointer-events: none;
+            display: none;
+            z-index: 1000;
+        }
+        #legend {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            color: #fff;
+            background: rgba(0,0,0,0.7);
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 11px;
+        }
+    </style>
+</head>
+<body>
+    <div id="info">
+        <h2>Epstein Email Network</h2>
+        <p><strong>198</strong> people, <strong>564</strong> connections</p>
+        <p>Source: Hugging Face notesbymuneeb/epstein-emails</p>
+        <p>Drag to rotate, scroll to zoom, click for details</p>
+    </div>
+    <div id="tooltip"></div>
+    <div id="legend">
+        <strong>Node size</strong>: Email thread count<br>
+        <strong>Colors</strong>: Community clusters
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    
+    <script>
+    const graphData = {
+  "nodes": [
+    {
+      "id": "jeffrey epstein",
+      "name": "Jeffrey Epstein",
+      "mentions": 5369,
+      "files": 5369,
+      "connections": 187,
+      "cluster": 1
+    },
+    {
+      "id": "michael wolff",
+      "name": "Michael Wolff",
+      "mentions": 297,
+      "files": 297,
+      "connections": 13,
+      "cluster": 1
+    },
+    {
+      "id": "richard kahn",
+      "name": "Richard Kahn",
+      "mentions": 256,
+      "files": 256,
+      "connections": 10,
+      "cluster": 1
+    },
+    {
+      "id": "kathy ruemmler",
+      "name": "Kathy Ruemmler",
+      "mentions": 254,
+      "files": 254,
+      "connections": 18,
+      "cluster": 1
+    },
+    {
+      "id": "reid weingarten",
+      "name": "Reid Weingarten",
+      "mentions": 247,
+      "files": 247,
+      "connections": 16,
+      "cluster": 8
+    },
+    {
+      "id": "darren indyke",
+      "name": "Darren Indyke",
+      "mentions": 213,
+      "files": 213,
+      "connections": 35,
+      "cluster": 2
+    },
+    {
+      "id": "thomas jr., landon",
+      "name": "Thomas Jr., Landon",
+      "mentions": 193,
+      "files": 193,
+      "connections": 6,
+      "cluster": 1
+    },
+    {
+      "id": "steve bannon",
+      "name": "Steve Bannon",
+      "mentions": 170,
+      "files": 170,
+      "connections": 15,
+      "cluster": 9
+    },
+    {
+      "id": "martin weinberg",
+      "name": "Martin Weinberg",
+      "mentions": 107,
+      "files": 107,
+      "connections": 24,
+      "cluster": 3
+    },
+    {
+      "id": "nicholas ribis",
+      "name": "Nicholas Ribis",
+      "mentions": 102,
+      "files": 102,
+      "connections": 2,
+      "cluster": 1
+    },
+    {
+      "id": "lawrence krauss",
+      "name": "Lawrence Krauss",
+      "mentions": 102,
+      "files": 102,
+      "connections": 5,
+      "cluster": 1
+    },
+    {
+      "id": "larry summers",
+      "name": "Larry Summers",
+      "mentions": 99,
+      "files": 99,
+      "connections": 5,
+      "cluster": 1
+    },
+    {
+      "id": "jeffrey",
+      "name": "Jeffrey",
+      "mentions": 92,
+      "files": 92,
+      "connections": 21,
+      "cluster": 1
+    },
+    {
+      "id": "lesley groff",
+      "name": "Lesley Groff",
+      "mentions": 89,
+      "files": 89,
+      "connections": 17,
+      "cluster": 1
+    },
+    {
+      "id": "lisa new",
+      "name": "Lisa New",
+      "mentions": 87,
+      "files": 87,
+      "connections": 6,
+      "cluster": 1
+    },
+    {
+      "id": "melanie spinella",
+      "name": "Melanie Spinella",
+      "mentions": 85,
+      "files": 85,
+      "connections": 9,
+      "cluster": 1
+    },
+    {
+      "id": "boris nikolic",
+      "name": "Boris Nikolic",
+      "mentions": 84,
+      "files": 84,
+      "connections": 4,
+      "cluster": 6
+    },
+    {
+      "id": "larry visoski",
+      "name": "Larry Visoski",
+      "mentions": 79,
+      "files": 79,
+      "connections": 6,
+      "cluster": 1
+    },
+    {
+      "id": "martin g. weinberg",
+      "name": "Martin G. Weinberg",
+      "mentions": 67,
+      "files": 67,
+      "connections": 16,
+      "cluster": 3
+    },
+    {
+      "id": "lhs",
+      "name": "Lhs",
+      "mentions": 62,
+      "files": 62,
+      "connections": 5,
+      "cluster": 1
+    },
+    {
+      "id": "paul krassner",
+      "name": "Paul Krassner",
+      "mentions": 59,
+      "files": 59,
+      "connections": 1,
+      "cluster": 1
+    },
+    {
+      "id": "gmax",
+      "name": "Gmax",
+      "mentions": 57,
+      "files": 57,
+      "connections": 11,
+      "cluster": 5
+    },
+    {
+      "id": "jonathan farkas",
+      "name": "Jonathan Farkas",
+      "mentions": 54,
+      "files": 54,
+      "connections": 2,
+      "cluster": 1
+    },
+    {
+      "id": "peggy siegal",
+      "name": "Peggy Siegal",
+      "mentions": 53,
+      "files": 53,
+      "connections": 7,
+      "cluster": 1
+    },
+    {
+      "id": "joi ito",
+      "name": "Joi Ito",
+      "mentions": 51,
+      "files": 51,
+      "connections": 3,
+      "cluster": 1
+    },
+    {
+      "id": "robert kuhn",
+      "name": "Robert Kuhn",
+      "mentions": 45,
+      "files": 45,
+      "connections": 5,
+      "cluster": 1
+    },
+    {
+      "id": "jack goldberger",
+      "name": "Jack Goldberger",
+      "mentions": 40,
+      "files": 40,
+      "connections": 16,
+      "cluster": 3
+    },
+    {
+      "id": "sultan bin sulayem",
+      "name": "Sultan Bin Sulayem",
+      "mentions": 38,
+      "files": 38,
+      "connections": 2,
+      "cluster": 1
+    },
+    {
+      "id": "deepak chopra",
+      "name": "Deepak Chopra",
+      "mentions": 38,
+      "files": 38,
+      "connections": 1,
+      "cluster": 1
+    },
+    {
+      "id": "steven hoffenberg",
+      "name": "Steven Hoffenberg",
+      "mentions": 38,
+      "files": 38,
+      "connections": 8,
+      "cluster": 2
+    },
+    {
+      "id": "g maxwell",
+      "name": "G Maxwell",
+      "mentions": 36,
+      "files": 36,
+      "connections": 4,
+      "cluster": 1
+    },
+    {
+      "id": "jessica cadwell",
+      "name": "Jessica Cadwell",
+      "mentions": 35,
+      "files": 35,
+      "connections": 7,
+      "cluster": 3
+    },
+    {
+      "id": "tonja haddad coleman",
+      "name": "Tonja Haddad Coleman",
+      "mentions": 35,
+      "files": 35,
+      "connections": 6,
+      "cluster": 2
+    },
+    {
+      "id": "noam chomsky",
+      "name": "Noam Chomsky",
+      "mentions": 34,
+      "files": 34,
+      "connections": 3,
+      "cluster": 1
+    },
+    {
+      "id": "faith kates",
+      "name": "Faith Kates",
+      "mentions": 33,
+      "files": 33,
+      "connections": 1,
+      "cluster": 1
+    },
+    {
+      "id": "alan m. dershowitz",
+      "name": "Alan M. Dershowitz",
+      "mentions": 33,
+      "files": 33,
+      "connections": 14,
+      "cluster": 3
+    },
+    {
+      "id": "robert trivers",
+      "name": "Robert Trivers",
+      "mentions": 33,
+      "files": 33,
+      "connections": 1,
+      "cluster": 1
+    },
+    {
+      "id": "landon thomas jr.",
+      "name": "Landon Thomas Jr.",
+      "mentions": 32,
+      "files": 32,
+      "connections": 3,
+      "cluster": 1
+    },
+    {
+      "id": "jacquie johnson",
+      "name": "Jacquie Johnson",
+      "mentions": 30,
+      "files": 30,
+      "connections": 4,
+      "cluster": 3
+    },
+    {
+      "id": "miller, michael",
+      "name": "Miller, Michael",
+      "mentions": 28,
+      "files": 28,
+      "connections": 15,
+      "cluster": 8
+    },
+    {
+      "id": "ingram, david (reuters news)",
+      "name": "Ingram, David (Reuters News)",
+      "mentions": 27,
+      "files": 27,
+      "connections": 10,
+      "cluster": 3
+    },
+    {
+      "id": "david schoen",
+      "name": "David Schoen",
+      "mentions": 27,
+      "files": 27,
+      "connections": 1,
+      "cluster": 1
+    },
+    {
+      "id": "ken starr",
+      "name": "Ken Starr",
+      "mentions": 27,
+      "files": 27,
+      "connections": 10,
+      "cluster": 1
+    },
+    {
+      "id": "robert lawrence kuhn",
+      "name": "Robert Lawrence Kuhn",
+      "mentions": 26,
+      "files": 26,
+      "connections": 2,
+      "cluster": 1
+    },
+    {
+      "id": "us gio",
+      "name": "Us Gio",
+      "mentions": 26,
+      "files": 26,
+      "connections": 1,
+      "cluster": 4
+    },
+    {
+      "id": "alan dershowitz",
+      "name": "Alan Dershowitz",
+      "mentions": 25,
+      "files": 25,
+      "connections": 13,
+      "cluster": 3
+    },
+    {
+      "id": "linda stone",
+      "name": "Linda Stone",
+      "mentions": 25,
+      "files": 25,
+      "connections": 1,
+      "cluster": 1
+    },
+    {
+      "id": "ehud barak",
+      "name": "Ehud Barak",
+      "mentions": 25,
+      "files": 25,
+      "connections": 2,
+      "cluster": 1
+    },
+    {
+      "id": "jay lefkowitz",
+      "name": "Jay Lefkowitz",
+      "mentions": 24,
+      "files": 24,
+      "connections": 6,
+      "cluster": 5
+    },
+    {
+      "id": "pritzker, tom",
+      "name": "Pritzker, Tom",
+      "mentions": 24,
+      "files": 24,
+      "connections": 1,
+      "cluster": 1
+    },
+    {
+      "id": "lang, caroline",
+      "name": "Lang, Caroline",
+      "mentions": 24,
+      "files": 24,
+      "connections": 4,
+      "cluster": 2
+    },
+    {
+      "id": "jes staley",
+      "name": "Jes Staley",
+      "mentions": 24,
+      "files": 24,
+      "connections": 3,
+      "cluster": 11
+    },
+    {
+      "id": "christina galbraith",
+      "name": "Christina Galbraith",
+      "mentions": 22,
+      "files": 22,
+      "connections": 3,
+      "cluster": 7
+    },
+    {
+      "id": "brad wechsler",
+      "name": "Brad Wechsler",
+      "mentions": 22,
+      "files": 22,
+      "connections": 5,
+      "cluster": 1
+    },
+    {
+      "id": "rich kahn",
+      "name": "Rich Kahn",
+      "mentions": 22,
+      "files": 22,
+      "connections": 9,
+      "cluster": 1
+    },
+    {
+      "id": "i",
+      "name": "I",
+      "mentions": 22,
+      "files": 22,
+      "connections": 2,
+      "cluster": 1
+    },
+    {
+      "id": "etienne binant",
+      "name": "Etienne Binant",
+      "mentions": 22,
+      "files": 22,
+      "connections": 4,
+      "cluster": 2
+    },
+    {
+      "id": "rebecca watson",
+      "name": "Rebecca Watson",
+      "mentions": 22,
+      "files": 22,
+      "connections": 2,
+      "cluster": 1
+    },
+    {
+      "id": "sharon churcher",
+      "name": "Sharon Churcher",
+      "mentions": 22,
+      "files": 22,
+      "connections": 5,
+      "cluster": 2
+    },
+    {
+      "id": "ens, amanda",
+      "name": "Ens, Amanda",
+      "mentions": 21,
+      "files": 21,
+      "connections": 3,
+      "cluster": 1
+    },
+    {
+      "id": "zubair khan",
+      "name": "Zubair Khan",
+      "mentions": 20,
+      "files": 20,
+      "connections": 2,
+      "cluster": 1
+    },
+    {
+      "id": "undisclosed recipients",
+      "name": "Undisclosed Recipients",
+      "mentions": 20,
+      "files": 20,
+      "connections": 1,
+      "cluster": 4
+    },
+    {
+      "id": "mark cohen",
+      "name": "Mark Cohen",
+      "mentions": 19,
+      "files": 19,
+      "connections": 8,
+      "cluster": 5
+    },
+    {
+      "id": "terry kafka",
+      "name": "Terry Kafka",
+      "mentions": 19,
+      "files": 19,
+      "connections": 3,
+      "cluster": 2
+    },
+    {
+      "id": "roy black",
+      "name": "Roy Black",
+      "mentions": 19,
+      "files": 19,
+      "connections": 8,
+      "cluster": 3
+    },
+    {
+      "id": "barry j. cohen",
+      "name": "Barry J. Cohen",
+      "mentions": 19,
+      "files": 19,
+      "connections": 3,
+      "cluster": 1
+    },
+    {
+      "id": "paul barrett",
+      "name": "Paul Barrett",
+      "mentions": 19,
+      "files": 19,
+      "connections": 2,
+      "cluster": 1
+    },
+    {
+      "id": "ny max",
+      "name": "Ny Max",
+      "mentions": 19,
+      "files": 19,
+      "connections": 7,
+      "cluster": 5
+    },
+    {
+      "id": "leon",
+      "name": "Leon",
+      "mentions": 18,
+      "files": 18,
+      "connections": 2,
+      "cluster": 1
+    },
+    {
+      "id": "steven pfeiffer",
+      "name": "Steven Pfeiffer",
+      "mentions": 18,
+      "files": 18,
+      "connections": 5,
+      "cluster": 1
+    },
+    {
+      "id": "kevin frost",
+      "name": "Kevin Frost",
+      "mentions": 18,
+      "files": 18,
+      "connections": 3,
+      "cluster": 6
+    },
+    {
+      "id": "al seckel",
+      "name": "Al Seckel",
+      "mentions": 18,
+      "files": 18,
+      "connections": 2,
+      "cluster": 1
+    },
+    {
+      "id": "brett d. jaffe",
+      "name": "Brett D. Jaffe",
+      "mentions": 17,
+      "files": 17,
+      "connections": 8,
+      "cluster": 5
+    },
+    {
+      "id": "peter aldhous",
+      "name": "Peter Aldhous",
+      "mentions": 17,
+      "files": 17,
+      "connections": 3,
+      "cluster": 0
+    },
+    {
+      "id": "tyler shears",
+      "name": "Tyler Shears",
+      "mentions": 16,
+      "files": 16,
+      "connections": 2,
+      "cluster": 7
+    },
+    {
+      "id": "michael",
+      "name": "Michael",
+      "mentions": 16,
+      "files": 16,
+      "connections": 10,
+      "cluster": 2
+    },
+    {
+      "id": "x",
+      "name": "X",
+      "mentions": 16,
+      "files": 16,
+      "connections": 1,
+      "cluster": 1
+    },
+    {
+      "id": "eric roth",
+      "name": "Eric Roth",
+      "mentions": 16,
+      "files": 16,
+      "connections": 2,
+      "cluster": 1
+    },
+    {
+      "id": "alireza ittihadieh",
+      "name": "Alireza Ittihadieh",
+      "mentions": 16,
+      "files": 16,
+      "connections": 1,
+      "cluster": 1
+    },
+    {
+      "id": "darren lndyke",
+      "name": "Darren Lndyke",
+      "mentions": 15,
+      "files": 15,
+      "connections": 3,
+      "cluster": 1
+    },
+    {
+      "id": "king, kathryn",
+      "name": "King, Kathryn",
+      "mentions": 15,
+      "files": 15,
+      "connections": 13,
+      "cluster": 8
+    },
+    {
+      "id": "weinstein, jason",
+      "name": "Weinstein, Jason",
+      "mentions": 15,
+      "files": 15,
+      "connections": 13,
+      "cluster": 8
+    },
+    {
+      "id": "keough, michael",
+      "name": "Keough, Michael",
+      "mentions": 15,
+      "files": 15,
+      "connections": 13,
+      "cluster": 8
+    },
+    {
+      "id": "jabor y.",
+      "name": "Jabor Y.",
+      "mentions": 15,
+      "files": 15,
+      "connections": 1,
+      "cluster": 1
+    },
+    {
+      "id": "lhsoffice",
+      "name": "Lhsoffice",
+      "mentions": 15,
+      "files": 15,
+      "connections": 4,
+      "cluster": 1
+    },
+    {
+      "id": "thorbjon jagland",
+      "name": "Thorbjon Jagland",
+      "mentions": 14,
+      "files": 14,
+      "connections": 1,
+      "cluster": 1
+    },
+    {
+      "id": "wolfe, alexandra",
+      "name": "Wolfe, Alexandra",
+      "mentions": 14,
+      "files": 14,
+      "connections": 3,
+      "cluster": 5
+    },
+    {
+      "id": "david stern",
+      "name": "David Stern",
+      "mentions": 14,
+      "files": 14,
+      "connections": 1,
+      "cluster": 1
+    },
+    {
+      "id": "boris nikolic (bgc3)",
+      "name": "Boris Nikolic (Bgc3)",
+      "mentions": 14,
+      "files": 14,
+      "connections": 1,
+      "cluster": 1
+    },
+    {
+      "id": "es",
+      "name": "Es",
+      "mentions": 14,
+      "files": 14,
+      "connections": 1,
+      "cluster": 1
+    },
+    {
+      "id": "lawrence summers",
+      "name": "Lawrence Summers",
+      "mentions": 14,
+      "files": 14,
+      "connections": 2,
+      "cluster": 1
+    },
+    {
+      "id": "will bohlen",
+      "name": "Will Bohlen",
+      "mentions": 14,
+      "files": 14,
+      "connections": 13,
+      "cluster": 8
+    },
+    {
+      "id": "david grosof",
+      "name": "David Grosof",
+      "mentions": 14,
+      "files": 14,
+      "connections": 1,
+      "cluster": 1
+    },
+    {
+      "id": "fred haddad",
+      "name": "Fred Haddad",
+      "mentions": 14,
+      "files": 14,
+      "connections": 5,
+      "cluster": 2
+    },
+    {
+      "id": "kelly friendly",
+      "name": "Kelly Friendly",
+      "mentions": 14,
+      "files": 14,
+      "connections": 2,
+      "cluster": 1
+    },
+    {
+      "id": "joscha bach",
+      "name": "Joscha Bach",
+      "mentions": 14,
+      "files": 14,
+      "connections": 1,
+      "cluster": 1
+    },
+    {
+      "id": "michael reiter/palmbeach",
+      "name": "Michael Reiter/Palmbeach",
+      "mentions": 14,
+      "files": 14,
+      "connections": 5,
+      "cluster": 3
+    },
+    {
+      "id": "robert d. critton jr.",
+      "name": "Robert D. Critton Jr.",
+      "mentions": 14,
+      "files": 14,
+      "connections": 9,
+      "cluster": 3
+    },
+    {
+      "id": "benjamin harnwell",
+      "name": "Benjamin Harnwell",
+      "mentions": 14,
+      "files": 14,
+      "connections": 4,
+      "cluster": 9
+    },
+    {
+      "id": "kirsty mackenzie",
+      "name": "Kirsty Mackenzie",
+      "mentions": 14,
+      "files": 14,
+      "connections": 6,
+      "cluster": 3
+    },
+    {
+      "id": "larry",
+      "name": "Larry",
+      "mentions": 13,
+      "files": 13,
+      "connections": 6,
+      "cluster": 1
+    },
+    {
+      "id": "joichi ito",
+      "name": "Joichi Ito",
+      "mentions": 13,
+      "files": 13,
+      "connections": 2,
+      "cluster": 1
+    },
+    {
+      "id": "philip kafka",
+      "name": "Philip Kafka",
+      "mentions": 13,
+      "files": 13,
+      "connections": 3,
+      "cluster": 2
+    },
+    {
+      "id": "michael, charles",
+      "name": "Michael, Charles",
+      "mentions": 13,
+      "files": 13,
+      "connections": 7,
+      "cluster": 2
+    },
+    {
+      "id": "bradley j. edwards",
+      "name": "Bradley J. Edwards",
+      "mentions": 13,
+      "files": 13,
+      "connections": 3,
+      "cluster": 3
+    },
+    {
+      "id": "erika kellerhals",
+      "name": "Erika Kellerhals",
+      "mentions": 13,
+      "files": 13,
+      "connections": 1,
+      "cluster": 1
+    },
+    {
+      "id": "maria luisa",
+      "name": "Maria Luisa",
+      "mentions": 13,
+      "files": 13,
+      "connections": 4,
+      "cluster": 9
+    },
+    {
+      "id": "y. alp aslandogan",
+      "name": "Y. Alp Aslandogan",
+      "mentions": 13,
+      "files": 13,
+      "connections": 13,
+      "cluster": 8
+    },
+    {
+      "id": "editorialstaff",
+      "name": "Editorialstaff",
+      "mentions": 13,
+      "files": 13,
+      "connections": 1,
+      "cluster": 1
+    },
+    {
+      "id": "david marin",
+      "name": "David Marin",
+      "mentions": 13,
+      "files": 13,
+      "connections": 12,
+      "cluster": 8
+    },
+    {
+      "id": "rivkin, david",
+      "name": "Rivkin, David",
+      "mentions": 13,
+      "files": 13,
+      "connections": 4,
+      "cluster": 9
+    },
+    {
+      "id": "magdalena schuster",
+      "name": "Magdalena Schuster",
+      "mentions": 13,
+      "files": 13,
+      "connections": 3,
+      "cluster": 6
+    },
+    {
+      "id": "john mcfarlane",
+      "name": "John Mcfarlane",
+      "mentions": 13,
+      "files": 13,
+      "connections": 2,
+      "cluster": 11
+    },
+    {
+      "id": "david pegg",
+      "name": "David Pegg",
+      "mentions": 12,
+      "files": 12,
+      "connections": 5,
+      "cluster": 3
+    },
+    {
+      "id": "karp, brad s",
+      "name": "Karp, Brad S",
+      "mentions": 12,
+      "files": 12,
+      "connections": 1,
+      "cluster": 1
+    },
+    {
+      "id": "a",
+      "name": "A",
+      "mentions": 12,
+      "files": 12,
+      "connections": 2,
+      "cluster": 1
+    },
+    {
+      "id": "landon thomas",
+      "name": "Landon Thomas",
+      "mentions": 12,
+      "files": 12,
+      "connections": 2,
+      "cluster": 1
+    },
+    {
+      "id": "kathy",
+      "name": "Kathy",
+      "mentions": 12,
+      "files": 12,
+      "connections": 3,
+      "cluster": 1
+    },
+    {
+      "id": "katelyn wohlford",
+      "name": "Katelyn Wohlford",
+      "mentions": 12,
+      "files": 12,
+      "connections": 13,
+      "cluster": 8
+    },
+    {
+      "id": "osman oz.",
+      "name": "Osman Oz.",
+      "mentions": 12,
+      "files": 12,
+      "connections": 13,
+      "cluster": 8
+    },
+    {
+      "id": "drake, william",
+      "name": "Drake, William",
+      "mentions": 12,
+      "files": 12,
+      "connections": 13,
+      "cluster": 8
+    },
+    {
+      "id": "peter mandelson",
+      "name": "Peter Mandelson",
+      "mentions": 12,
+      "files": 12,
+      "connections": 3,
+      "cluster": 3
+    },
+    {
+      "id": "anasalrasheed",
+      "name": "Anasalrasheed",
+      "mentions": 12,
+      "files": 12,
+      "connections": 1,
+      "cluster": 1
+    },
+    {
+      "id": "lilly sanchez",
+      "name": "Lilly Sanchez",
+      "mentions": 12,
+      "files": 12,
+      "connections": 3,
+      "cluster": 1
+    },
+    {
+      "id": "dr. krauss",
+      "name": "Dr. Krauss",
+      "mentions": 11,
+      "files": 11,
+      "connections": 2,
+      "cluster": 0
+    },
+    {
+      "id": "soon yi previn",
+      "name": "Soon Yi Previn",
+      "mentions": 11,
+      "files": 11,
+      "connections": 2,
+      "cluster": 1
+    },
+    {
+      "id": "bruce moskowitz",
+      "name": "Bruce Moskowitz",
+      "mentions": 11,
+      "files": 11,
+      "connections": 1,
+      "cluster": 1
+    },
+    {
+      "id": "sultan bin sulayern",
+      "name": "Sultan Bin Sulayern",
+      "mentions": 11,
+      "files": 11,
+      "connections": 2,
+      "cluster": 1
+    },
+    {
+      "id": "robert l. kuhn",
+      "name": "Robert L. Kuhn",
+      "mentions": 11,
+      "files": 11,
+      "connections": 3,
+      "cluster": 1
+    },
+    {
+      "id": "remzi kulen",
+      "name": "Remzi Kulen",
+      "mentions": 11,
+      "files": 11,
+      "connections": 13,
+      "cluster": 8
+    },
+    {
+      "id": "erin billings",
+      "name": "Erin Billings",
+      "mentions": 11,
+      "files": 11,
+      "connections": 13,
+      "cluster": 8
+    },
+    {
+      "id": "peter thiel",
+      "name": "Peter Thiel",
+      "mentions": 11,
+      "files": 11,
+      "connections": 1,
+      "cluster": 1
+    },
+    {
+      "id": "mark l. epstein",
+      "name": "Mark L. Epstein",
+      "mentions": 11,
+      "files": 11,
+      "connections": 1,
+      "cluster": 1
+    },
+    {
+      "id": "stephen hanson",
+      "name": "Stephen Hanson",
+      "mentions": 11,
+      "files": 11,
+      "connections": 1,
+      "cluster": 1
+    },
+    {
+      "id": "barbro c ehnbom",
+      "name": "Barbro C Ehnbom",
+      "mentions": 11,
+      "files": 11,
+      "connections": 3,
+      "cluster": 1
+    },
+    {
+      "id": "bill siegel",
+      "name": "Bill Siegel",
+      "mentions": 11,
+      "files": 11,
+      "connections": 1,
+      "cluster": 1
+    },
+    {
+      "id": "ross gow",
+      "name": "Ross Gow",
+      "mentions": 11,
+      "files": 11,
+      "connections": 3,
+      "cluster": 5
+    },
+    {
+      "id": "darren",
+      "name": "Darren",
+      "mentions": 10,
+      "files": 10,
+      "connections": 9,
+      "cluster": 2
+    },
+    {
+      "id": "katherine keating",
+      "name": "Katherine Keating",
+      "mentions": 10,
+      "files": 10,
+      "connections": 1,
+      "cluster": 1
+    },
+    {
+      "id": "hs",
+      "name": "Hs",
+      "mentions": 10,
+      "files": 10,
+      "connections": 3,
+      "cluster": 1
+    },
+    {
+      "id": "raheem kassam",
+      "name": "Raheem Kassam",
+      "mentions": 10,
+      "files": 10,
+      "connections": 6,
+      "cluster": 9
+    },
+    {
+      "id": "oliver lane",
+      "name": "Oliver Lane",
+      "mentions": 10,
+      "files": 10,
+      "connections": 6,
+      "cluster": 9
+    },
+    {
+      "id": "alexander marlow",
+      "name": "Alexander Marlow",
+      "mentions": 10,
+      "files": 10,
+      "connections": 6,
+      "cluster": 9
+    },
+    {
+      "id": "frances martel",
+      "name": "Frances Martel",
+      "mentions": 10,
+      "files": 10,
+      "connections": 6,
+      "cluster": 9
+    },
+    {
+      "id": "immelt, stephen j.",
+      "name": "Immelt, Stephen J.",
+      "mentions": 10,
+      "files": 10,
+      "connections": 3,
+      "cluster": 1
+    },
+    {
+      "id": "mosk, matthew",
+      "name": "Mosk, Matthew",
+      "mentions": 10,
+      "files": 10,
+      "connections": 4,
+      "cluster": 1
+    },
+    {
+      "id": "jeeproject",
+      "name": "Jeeproject",
+      "mentions": 10,
+      "files": 10,
+      "connections": 1,
+      "cluster": 10
+    },
+    {
+      "id": "debbie fein",
+      "name": "Debbie Fein",
+      "mentions": 10,
+      "files": 10,
+      "connections": 5,
+      "cluster": 2
+    },
+    {
+      "id": "kathy ruemm|er",
+      "name": "Kathy Ruemm|Er",
+      "mentions": 10,
+      "files": 10,
+      "connections": 1,
+      "cluster": 1
+    },
+    {
+      "id": "hill, james e.",
+      "name": "Hill, James E.",
+      "mentions": 10,
+      "files": 10,
+      "connections": 5,
+      "cluster": 3
+    },
+    {
+      "id": "howard rubenstein",
+      "name": "Howard Rubenstein",
+      "mentions": 10,
+      "files": 10,
+      "connections": 5,
+      "cluster": 2
+    },
+    {
+      "id": "vinit sahni",
+      "name": "Vinit Sahni",
+      "mentions": 10,
+      "files": 10,
+      "connections": 1,
+      "cluster": 1
+    },
+    {
+      "id": "the duke",
+      "name": "The Duke",
+      "mentions": 10,
+      "files": 10,
+      "connections": 5,
+      "cluster": 5
+    },
+    {
+      "id": "mohamed waheed hassan",
+      "name": "Mohamed Waheed Hassan",
+      "mentions": 10,
+      "files": 10,
+      "connections": 1,
+      "cluster": 1
+    },
+    {
+      "id": "anas alrasheed",
+      "name": "Anas Alrasheed",
+      "mentions": 10,
+      "files": 10,
+      "connections": 1,
+      "cluster": 1
+    },
+    {
+      "id": "thomas d. williams",
+      "name": "Thomas D. Williams",
+      "mentions": 9,
+      "files": 9,
+      "connections": 6,
+      "cluster": 9
+    },
+    {
+      "id": "keyu jin",
+      "name": "Keyu Jin",
+      "mentions": 9,
+      "files": 9,
+      "connections": 2,
+      "cluster": 1
+    },
+    {
+      "id": "nicholas ribi",
+      "name": "Nicholas Ribi",
+      "mentions": 9,
+      "files": 9,
+      "connections": 2,
+      "cluster": 1
+    },
+    {
+      "id": "jeffrey epstein jeevacation",
+      "name": "Jeffrey Epstein Jeevacation",
+      "mentions": 9,
+      "files": 9,
+      "connections": 1,
+      "cluster": 1
+    },
+    {
+      "id": "melanie spineila",
+      "name": "Melanie Spineila",
+      "mentions": 9,
+      "files": 9,
+      "connections": 1,
+      "cluster": 1
+    },
+    {
+      "id": "matthew hiltzik",
+      "name": "Matthew Hiltzik",
+      "mentions": 9,
+      "files": 9,
+      "connections": 5,
+      "cluster": 1
+    },
+    {
+      "id": "ariane de rothschild",
+      "name": "Ariane De Rothschild",
+      "mentions": 9,
+      "files": 9,
+      "connections": 1,
+      "cluster": 1
+    },
+    {
+      "id": "grossman, andrew m",
+      "name": "Grossman, Andrew M",
+      "mentions": 9,
+      "files": 9,
+      "connections": 3,
+      "cluster": 9
+    },
+    {
+      "id": "richard kahn [i",
+      "name": "Richard Kahn [I",
+      "mentions": 9,
+      "files": 9,
+      "connections": 1,
+      "cluster": 1
+    },
+    {
+      "id": "staley, jes: barclays (ldn)",
+      "name": "Staley, Jes: Barclays (Ldn)",
+      "mentions": 9,
+      "files": 9,
+      "connections": 2,
+      "cluster": 11
+    },
+    {
+      "id": "stephanie",
+      "name": "Stephanie",
+      "mentions": 8,
+      "files": 8,
+      "connections": 3,
+      "cluster": 1
+    },
+    {
+      "id": "charles",
+      "name": "Charles",
+      "mentions": 8,
+      "files": 8,
+      "connections": 5,
+      "cluster": 2
+    },
+    {
+      "id": "jean luc brunel",
+      "name": "Jean Luc Brunel",
+      "mentions": 8,
+      "files": 8,
+      "connections": 2,
+      "cluster": 6
+    },
+    {
+      "id": "barbro ehnbom",
+      "name": "Barbro Ehnbom",
+      "mentions": 8,
+      "files": 8,
+      "connections": 3,
+      "cluster": 1
+    },
+    {
+      "id": "thomas jr., landon po",
+      "name": "Thomas Jr., Landon Po",
+      "mentions": 8,
+      "files": 8,
+      "connections": 2,
+      "cluster": 1
+    },
+    {
+      "id": "asmallworld",
+      "name": "Asmallworld",
+      "mentions": 8,
+      "files": 8,
+      "connections": 1,
+      "cluster": 10
+    },
+    {
+      "id": "stanley rosenberg",
+      "name": "Stanley Rosenberg",
+      "mentions": 8,
+      "files": 8,
+      "connections": 1,
+      "cluster": 1
+    },
+    {
+      "id": "gmax1",
+      "name": "Gmax1",
+      "mentions": 8,
+      "files": 8,
+      "connections": 3,
+      "cluster": 5
+    },
+    {
+      "id": "parker, ashley",
+      "name": "Parker, Ashley",
+      "mentions": 8,
+      "files": 8,
+      "connections": 3,
+      "cluster": 8
+    },
+    {
+      "id": "elisa new",
+      "name": "Elisa New",
+      "mentions": 8,
+      "files": 8,
+      "connections": 3,
+      "cluster": 1
+    },
+    {
+      "id": "matt williams",
+      "name": "Matt Williams",
+      "mentions": 8,
+      "files": 8,
+      "connections": 3,
+      "cluster": 3
+    },
+    {
+      "id": "masha drokova",
+      "name": "Masha Drokova",
+      "mentions": 8,
+      "files": 8,
+      "connections": 1,
+      "cluster": 1
+    },
+    {
+      "id": "preate alexandra",
+      "name": "Preate Alexandra",
+      "mentions": 8,
+      "files": 8,
+      "connections": 3,
+      "cluster": 9
+    },
+    {
+      "id": "jide zeitlin",
+      "name": "Jide Zeitlin",
+      "mentions": 8,
+      "files": 8,
+      "connections": 1,
+      "cluster": 1
+    },
+    {
+      "id": "vinoda basnayake",
+      "name": "Vinoda Basnayake",
+      "mentions": 8,
+      "files": 8,
+      "connections": 1,
+      "cluster": 1
+    },
+    {
+      "id": "richard merkin",
+      "name": "Richard Merkin",
+      "mentions": 8,
+      "files": 8,
+      "connections": 1,
+      "cluster": 1
+    },
+    {
+      "id": "leon black",
+      "name": "Leon Black",
+      "mentions": 8,
+      "files": 8,
+      "connections": 1,
+      "cluster": 1
+    },
+    {
+      "id": "maskin, eric",
+      "name": "Maskin, Eric",
+      "mentions": 8,
+      "files": 8,
+      "connections": 4,
+      "cluster": 1
+    },
+    {
+      "id": "gary h. baise",
+      "name": "Gary H. Baise",
+      "mentions": 8,
+      "files": 8,
+      "connections": 3,
+      "cluster": 2
+    },
+    {
+      "id": "jack lang",
+      "name": "Jack Lang",
+      "mentions": 8,
+      "files": 8,
+      "connections": 2,
+      "cluster": 1
+    },
+    {
+      "id": "nadia",
+      "name": "Nadia",
+      "mentions": 8,
+      "files": 8,
+      "connections": 1,
+      "cluster": 1
+    },
+    {
+      "id": "barbro c. ehnbom",
+      "name": "Barbro C. Ehnbom",
+      "mentions": 8,
+      "files": 8,
+      "connections": 3,
+      "cluster": 1
+    },
+    {
+      "id": "landon thomas, jr.",
+      "name": "Landon Thomas, Jr.",
+      "mentions": 7,
+      "files": 7,
+      "connections": 2,
+      "cluster": 1
+    },
+    {
+      "id": "ada clapp",
+      "name": "Ada Clapp",
+      "mentions": 7,
+      "files": 7,
+      "connections": 4,
+      "cluster": 1
+    },
+    {
+      "id": "thomas jr., lando",
+      "name": "Thomas Jr., Lando",
+      "mentions": 7,
+      "files": 7,
+      "connections": 2,
+      "cluster": 1
+    },
+    {
+      "id": "melanie walker",
+      "name": "Melanie Walker",
+      "mentions": 7,
+      "files": 7,
+      "connections": 2,
+      "cluster": 1
+    },
+    {
+      "id": "dangene and jennie enterprise",
+      "name": "Dangene And Jennie Enterprise",
+      "mentions": 7,
+      "files": 7,
+      "connections": 1,
+      "cluster": 1
+    },
+    {
+      "id": "players2",
+      "name": "Players2",
+      "mentions": 7,
+      "files": 7,
+      "connections": 4,
+      "cluster": 2
+    },
+    {
+      "id": "ehbarak",
+      "name": "Ehbarak",
+      "mentions": 7,
+      "files": 7,
+      "connections": 1,
+      "cluster": 1
+    },
+    {
+      "id": "heather gray",
+      "name": "Heather Gray",
+      "mentions": 7,
+      "files": 7,
+      "connections": 3,
+      "cluster": 1
+    },
+    {
+      "id": "brad s karp",
+      "name": "Brad S Karp",
+      "mentions": 7,
+      "files": 7,
+      "connections": 1,
+      "cluster": 1
+    },
+    {
+      "id": "dunlavey, dean (oc)",
+      "name": "Dunlavey, Dean (Oc)",
+      "mentions": 7,
+      "files": 7,
+      "connections": 2,
+      "cluster": 1
+    },
+    {
+      "id": "daniel siad",
+      "name": "Daniel Siad",
+      "mentions": 7,
+      "files": 7,
+      "connections": 1,
+      "cluster": 1
+    }
+  ],
+  "edges": [
+    {
+      "source": "jeffrey epstein",
+      "target": "michael wolff",
+      "weight": 345
+    },
+    {
+      "source": "jeffrey epstein",
+      "target": "robert lawrence kuhn",
+      "weight": 26
+    },
+    {
+      "source": "jeffrey epstein",
+      "target": "robert kuhn",
+      "weight": 47
+    },
+    {
+      "source": "jeffrey epstein",
+      "target": "lesley groff",
+      "weight": 101
+    },
+    {
+      "source": "robert kuhn",
+      "target": "robert lawrence kuhn",
+      "weight": 13
+    },
+    {
+      "source": "lesley groff",
+      "target": "robert kuhn",
+      "weight": 3
+    },
+    {
+      "source": "jeffrey epstein",
+      "target": "martin g. weinberg",
+      "weight": 110
+    },
+    {
+      "source": "jeffrey epstein",
+      "target": "mark cohen",
+      "weight": 42
+    },
+    {
+      "source": "brett d. jaffe",
+      "target": "jeffrey epstein",
+      "weight": 32
+    },
+    {
+      "source": "gmax",
+      "target": "jeffrey epstein",
+      "weight": 105
+    },
+    {
+      "source": "jeffrey epstein",
+      "target": "martin weinberg",
+      "weight": 159
+    },
+    {
+      "source": "jay lefkowitz",
+      "target": "jeffrey epstein",
+      "weight": 15
+    },
+    {
+      "source": "brett d. jaffe",
+      "target": "mark cohen",
+      "weight": 15
+    },
+    {
+      "source": "gmax",
+      "target": "mark cohen",
+      "weight": 18
+    },
+    {
+      "source": "jay lefkowitz",
+      "target": "mark cohen",
+      "weight": 2
+    },
+    {
+      "source": "brett d. jaffe",
+      "target": "gmax",
+      "weight": 12
+    },
+    {
+      "source": "brett d. jaffe",
+      "target": "jay lefkowitz",
+      "weight": 2
+    },
+    {
+      "source": "jay lefkowitz",
+      "target": "martin weinberg",
+      "weight": 3
+    },
+    {
+      "source": "jeffrey epstein",
+      "target": "tyler shears",
+      "weight": 16
+    },
+    {
+      "source": "christina galbraith",
+      "target": "jeffrey epstein",
+      "weight": 23
+    },
+    {
+      "source": "christina galbraith",
+      "target": "tyler shears",
+      "weight": 14
+    },
+    {
+      "source": "peggy siegal",
+      "target": "stephanie",
+      "weight": 3
+    },
+    {
+      "source": "jeffrey epstein",
+      "target": "nicholas ribis",
+      "weight": 121
+    },
+    {
+      "source": "jeffrey epstein",
+      "target": "thomas jr., landon",
+      "weight": 200
+    },
+    {
+      "source": "jeffrey epstein",
+      "target": "richard kahn",
+      "weight": 265
+    },
+    {
+      "source": "dr. krauss",
+      "target": "peter aldhous",
+      "weight": 8
+    },
+    {
+      "source": "lawrence krauss",
+      "target": "peter aldhous",
+      "weight": 13
+    },
+    {
+      "source": "dr. krauss",
+      "target": "lawrence krauss",
+      "weight": 5
+    },
+    {
+      "source": "charles",
+      "target": "michael",
+      "weight": 8
+    },
+    {
+      "source": "jeffrey epstein",
+      "target": "zubair khan",
+      "weight": 20
+    },
+    {
+      "source": "martin g. weinberg",
+      "target": "michael wolff",
+      "weight": 14
+    },
+    {
+      "source": "martin weinberg",
+      "target": "michael wolff",
+      "weight": 9
+    },
+    {
+      "source": "kathy ruemmler",
+      "target": "michael wolff",
+      "weight": 14
+    },
+    {
+      "source": "darren indyke",
+      "target": "michael wolff",
+      "weight": 8
+    },
+    {
+      "source": "jeffrey epstein",
+      "target": "kathy ruemmler",
+      "weight": 292
+    },
+    {
+      "source": "darren indyke",
+      "target": "jeffrey epstein",
+      "weight": 250
+    },
+    {
+      "source": "martin g. weinberg",
+      "target": "martin weinberg",
+      "weight": 34
+    },
+    {
+      "source": "kathy ruemmler",
+      "target": "martin g. weinberg",
+      "weight": 12
+    },
+    {
+      "source": "darren indyke",
+      "target": "martin g. weinberg",
+      "weight": 10
+    },
+    {
+      "source": "kathy ruemmler",
+      "target": "martin weinberg",
+      "weight": 26
+    },
+    {
+      "source": "darren indyke",
+      "target": "martin weinberg",
+      "weight": 29
+    },
+    {
+      "source": "darren indyke",
+      "target": "kathy ruemmler",
+      "weight": 18
+    },
+    {
+      "source": "undisclosed recipients",
+      "target": "us gio",
+      "weight": 20
+    },
+    {
+      "source": "jeffrey epstein",
+      "target": "reid weingarten",
+      "weight": 361
+    },
+    {
+      "source": "jeffrey epstein",
+      "target": "larry",
+      "weight": 8
+    },
+    {
+      "source": "jeffrey epstein",
+      "target": "lisa new",
+      "weight": 102
+    },
+    {
+      "source": "michael",
+      "target": "michael wolff",
+      "weight": 6
+    },
+    {
+      "source": "michael wolff",
+      "target": "steve bannon",
+      "weight": 6
+    },
+    {
+      "source": "jeffrey epstein",
+      "target": "michael",
+      "weight": 7
+    },
+    {
+      "source": "jeffrey epstein",
+      "target": "steve bannon",
+      "weight": 173
+    },
+    {
+      "source": "michael",
+      "target": "steve bannon",
+      "weight": 3
+    },
+    {
+      "source": "darren lndyke",
+      "target": "jeffrey epstein",
+      "weight": 15
+    },
+    {
+      "source": "jeffrey epstein",
+      "target": "landon thomas jr.",
+      "weight": 34
+    },
+    {
+      "source": "jeffrey epstein",
+      "target": "landon thomas, jr.",
+      "weight": 6
+    },
+    {
+      "source": "darren lndyke",
+      "target": "kathy ruemmler",
+      "weight": 6
+    },
+    {
+      "source": "kathy ruemmler",
+      "target": "landon thomas jr.",
+      "weight": 2
+    },
+    {
+      "source": "jeffrey epstein",
+      "target": "larry visoski",
+      "weight": 79
+    },
+    {
+      "source": "darren indyke",
+      "target": "larry visoski",
+      "weight": 6
+    },
+    {
+      "source": "jeffrey epstein",
+      "target": "thorbjon jagland",
+      "weight": 14
+    },
+    {
+      "source": "alan dershowitz",
+      "target": "jeffrey epstein",
+      "weight": 33
+    },
+    {
+      "source": "jeffrey epstein",
+      "target": "joi ito",
+      "weight": 72
+    },
+    {
+      "source": "jeffrey epstein",
+      "target": "larry summers",
+      "weight": 101
+    },
+    {
+      "source": "jeffrey epstein",
+      "target": "lhs",
+      "weight": 63
+    },
+    {
+      "source": "g maxwell",
+      "target": "jeffrey epstein",
+      "weight": 48
+    },
+    {
+      "source": "alan dershowitz",
+      "target": "martin weinberg",
+      "weight": 10
+    },
+    {
+      "source": "alan dershowitz",
+      "target": "kathy ruemmler",
+      "weight": 4
+    },
+    {
+      "source": "jeffrey",
+      "target": "melanie spinella",
+      "weight": 2
+    },
+    {
+      "source": "brad wechsler",
+      "target": "melanie spinella",
+      "weight": 14
+    },
+    {
+      "source": "ada clapp",
+      "target": "brad wechsler",
+      "weight": 3
+    },
+    {
+      "source": "ada clapp",
+      "target": "melanie spinella",
+      "weight": 5
+    },
+    {
+      "source": "jeffrey epstein",
+      "target": "ny max",
+      "weight": 35
+    },
+    {
+      "source": "mark cohen",
+      "target": "ny max",
+      "weight": 18
+    },
+    {
+      "source": "brett d. jaffe",
+      "target": "ny max",
+      "weight": 15
+    },
+    {
+      "source": "gmax",
+      "target": "ny max",
+      "weight": 14
+    },
+    {
+      "source": "jeffrey epstein",
+      "target": "lawrence krauss",
+      "weight": 100
+    },
+    {
+      "source": "jeffrey epstein",
+      "target": "thomas jr., lando",
+      "weight": 6
+    },
+    {
+      "source": "thomas jr., lando",
+      "target": "thomas jr., landon",
+      "weight": 3
+    },
+    {
+      "source": "jeffrey epstein",
+      "target": "rich kahn",
+      "weight": 21
+    },
+    {
+      "source": "darren indyke",
+      "target": "lesley groff",
+      "weight": 6
+    },
+    {
+      "source": "lesley groff",
+      "target": "rich kahn",
+      "weight": 4
+    },
+    {
+      "source": "darren indyke",
+      "target": "rich kahn",
+      "weight": 10
+    },
+    {
+      "source": "jeffrey epstein",
+      "target": "joichi ito",
+      "weight": 17
+    },
+    {
+      "source": "joi ito",
+      "target": "joichi ito",
+      "weight": 10
+    },
+    {
+      "source": "philip kafka",
+      "target": "terry kafka",
+      "weight": 13
+    },
+    {
+      "source": "jeffrey epstein",
+      "target": "melanie walker",
+      "weight": 4
+    },
+    {
+      "source": "jeffrey epstein",
+      "target": "jonathan farkas",
+      "weight": 62
+    },
+    {
+      "source": "landon thomas jr.",
+      "target": "thomas jr., landon",
+      "weight": 13
+    },
+    {
+      "source": "dangene and jennie enterprise",
+      "target": "jeffrey epstein",
+      "weight": 9
+    },
+    {
+      "source": "jeffrey epstein",
+      "target": "pritzker, tom",
+      "weight": 26
+    },
+    {
+      "source": "jeffrey epstein",
+      "target": "soon yi previn",
+      "weight": 15
+    },
+    {
+      "source": "lisa new",
+      "target": "soon yi previn",
+      "weight": 6
+    },
+    {
+      "source": "jeffrey epstein",
+      "target": "peggy siegal",
+      "weight": 63
+    },
+    {
+      "source": "jeffrey epstein",
+      "target": "sultan bin sulayem",
+      "weight": 41
+    },
+    {
+      "source": "david pegg",
+      "target": "martin g. weinberg",
+      "weight": 7
+    },
+    {
+      "source": "david pegg",
+      "target": "jeffrey epstein",
+      "weight": 15
+    },
+    {
+      "source": "michael",
+      "target": "steven hoffenberg",
+      "weight": 2
+    },
+    {
+      "source": "charles",
+      "target": "steven hoffenberg",
+      "weight": 2
+    },
+    {
+      "source": "players2",
+      "target": "steven hoffenberg",
+      "weight": 7
+    },
+    {
+      "source": "ehbarak",
+      "target": "jeffrey epstein",
+      "weight": 7
+    },
+    {
+      "source": "boris nikolic",
+      "target": "jeffrey epstein",
+      "weight": 98
+    },
+    {
+      "source": "jeffrey epstein",
+      "target": "ross gow",
+      "weight": 5
+    },
+    {
+      "source": "g maxwell",
+      "target": "gmax",
+      "weight": 2
+    },
+    {
+      "source": "g maxwell",
+      "target": "ross gow",
+      "weight": 2
+    },
+    {
+      "source": "gmax",
+      "target": "ross gow",
+      "weight": 6
+    },
+    {
+      "source": "brad wechsler",
+      "target": "jeffrey epstein",
+      "weight": 17
+    },
+    {
+      "source": "jeffrey epstein",
+      "target": "melanie spinella",
+      "weight": 45
+    },
+    {
+      "source": "heather gray",
+      "target": "jeffrey epstein",
+      "weight": 4
+    },
+    {
+      "source": "brad wechsler",
+      "target": "heather gray",
+      "weight": 7
+    },
+    {
+      "source": "heather gray",
+      "target": "melanie spinella",
+      "weight": 4
+    },
+    {
+      "source": "i",
+      "target": "jeffrey epstein",
+      "weight": 25
+    },
+    {
+      "source": "ingram, david (reuters news)",
+      "target": "jeffrey epstein",
+      "weight": 55
+    },
+    {
+      "source": "alan m. dershowitz",
+      "target": "jeffrey epstein",
+      "weight": 62
+    },
+    {
+      "source": "jeffrey epstein",
+      "target": "roy black",
+      "weight": 27
+    },
+    {
+      "source": "jack goldberger",
+      "target": "jeffrey epstein",
+      "weight": 65
+    },
+    {
+      "source": "ingram, david (reuters news)",
+      "target": "martin weinberg",
+      "weight": 21
+    },
+    {
+      "source": "alan m. dershowitz",
+      "target": "martin weinberg",
+      "weight": 19
+    },
+    {
+      "source": "martin weinberg",
+      "target": "roy black",
+      "weight": 13
+    },
+    {
+      "source": "jack goldberger",
+      "target": "martin weinberg",
+      "weight": 18
+    },
+    {
+      "source": "alan dershowitz",
+      "target": "ingram, david (reuters news)",
+      "weight": 3
+    },
+    {
+      "source": "alan dershowitz",
+      "target": "alan m. dershowitz",
+      "weight": 7
+    },
+    {
+      "source": "alan dershowitz",
+      "target": "roy black",
+      "weight": 4
+    },
+    {
+      "source": "alan dershowitz",
+      "target": "jack goldberger",
+      "weight": 4
+    },
+    {
+      "source": "alan m. dershowitz",
+      "target": "ingram, david (reuters news)",
+      "weight": 13
+    },
+    {
+      "source": "ingram, david (reuters news)",
+      "target": "roy black",
+      "weight": 9
+    },
+    {
+      "source": "ingram, david (reuters news)",
+      "target": "jack goldberger",
+      "weight": 12
+    },
+    {
+      "source": "alan m. dershowitz",
+      "target": "roy black",
+      "weight": 10
+    },
+    {
+      "source": "alan m. dershowitz",
+      "target": "jack goldberger",
+      "weight": 12
+    },
+    {
+      "source": "jack goldberger",
+      "target": "roy black",
+      "weight": 10
+    },
+    {
+      "source": "darren indyke",
+      "target": "steven hoffenberg",
+      "weight": 23
+    },
+    {
+      "source": "darren indyke",
+      "target": "players2",
+      "weight": 5
+    },
+    {
+      "source": "darren indyke",
+      "target": "michael, charles",
+      "weight": 12
+    },
+    {
+      "source": "michael, charles",
+      "target": "steven hoffenberg",
+      "weight": 6
+    },
+    {
+      "source": "michael, charles",
+      "target": "players2",
+      "weight": 5
+    },
+    {
+      "source": "jeffrey epstein",
+      "target": "robert trivers",
+      "weight": 36
+    },
+    {
+      "source": "darren",
+      "target": "jeffrey epstein",
+      "weight": 12
+    },
+    {
+      "source": "jeffrey epstein",
+      "target": "wolfe, alexandra",
+      "weight": 8
+    },
+    {
+      "source": "darren",
+      "target": "jay lefkowitz",
+      "weight": 2
+    },
+    {
+      "source": "jay lefkowitz",
+      "target": "wolfe, alexandra",
+      "weight": 12
+    },
+    {
+      "source": "darren",
+      "target": "wolfe, alexandra",
+      "weight": 2
+    },
+    {
+      "source": "bradley j. edwards",
+      "target": "jessica cadwell",
+      "weight": 13
+    },
+    {
+      "source": "jacquie johnson",
+      "target": "jessica cadwell",
+      "weight": 29
+    },
+    {
+      "source": "bradley j. edwards",
+      "target": "jacquie johnson",
+      "weight": 12
+    },
+    {
+      "source": "jeffrey epstein",
+      "target": "jessica cadwell",
+      "weight": 17
+    },
+    {
+      "source": "darren indyke",
+      "target": "michael",
+      "weight": 5
+    },
+    {
+      "source": "charles",
+      "target": "darren indyke",
+      "weight": 5
+    },
+    {
+      "source": "jeffrey epstein",
+      "target": "kirsty mackenzie",
+      "weight": 17
+    },
+    {
+      "source": "jack goldberger",
+      "target": "kirsty mackenzie",
+      "weight": 9
+    },
+    {
+      "source": "jeffrey epstein",
+      "target": "katherine keating",
+      "weight": 8
+    },
+    {
+      "source": "jeffrey",
+      "target": "jeffrey epstein",
+      "weight": 91
+    },
+    {
+      "source": "hs",
+      "target": "jeffrey epstein",
+      "weight": 10
+    },
+    {
+      "source": "hs",
+      "target": "lhs",
+      "weight": 5
+    },
+    {
+      "source": "jeffrey epstein",
+      "target": "x",
+      "weight": 19
+    },
+    {
+      "source": "david stern",
+      "target": "jeffrey epstein",
+      "weight": 14
+    },
+    {
+      "source": "jeffrey epstein",
+      "target": "thomas d. williams",
+      "weight": 11
+    },
+    {
+      "source": "jeffrey epstein",
+      "target": "raheem kassam",
+      "weight": 12
+    },
+    {
+      "source": "jeffrey epstein",
+      "target": "oliver lane",
+      "weight": 12
+    },
+    {
+      "source": "alexander marlow",
+      "target": "jeffrey epstein",
+      "weight": 12
+    },
+    {
+      "source": "frances martel",
+      "target": "jeffrey epstein",
+      "weight": 12
+    },
+    {
+      "source": "steve bannon",
+      "target": "thomas d. williams",
+      "weight": 8
+    },
+    {
+      "source": "raheem kassam",
+      "target": "steve bannon",
+      "weight": 9
+    },
+    {
+      "source": "oliver lane",
+      "target": "steve bannon",
+      "weight": 9
+    },
+    {
+      "source": "alexander marlow",
+      "target": "steve bannon",
+      "weight": 9
+    },
+    {
+      "source": "frances martel",
+      "target": "steve bannon",
+      "weight": 9
+    },
+    {
+      "source": "raheem kassam",
+      "target": "thomas d. williams",
+      "weight": 9
+    },
+    {
+      "source": "oliver lane",
+      "target": "thomas d. williams",
+      "weight": 9
+    },
+    {
+      "source": "alexander marlow",
+      "target": "thomas d. williams",
+      "weight": 9
+    },
+    {
+      "source": "frances martel",
+      "target": "thomas d. williams",
+      "weight": 9
+    },
+    {
+      "source": "oliver lane",
+      "target": "raheem kassam",
+      "weight": 10
+    },
+    {
+      "source": "alexander marlow",
+      "target": "raheem kassam",
+      "weight": 10
+    },
+    {
+      "source": "frances martel",
+      "target": "raheem kassam",
+      "weight": 10
+    },
+    {
+      "source": "alexander marlow",
+      "target": "oliver lane",
+      "weight": 10
+    },
+    {
+      "source": "frances martel",
+      "target": "oliver lane",
+      "weight": 10
+    },
+    {
+      "source": "alexander marlow",
+      "target": "frances martel",
+      "weight": 10
+    },
+    {
+      "source": "erika kellerhals",
+      "target": "jeffrey epstein",
+      "weight": 13
+    },
+    {
+      "source": "jeffrey epstein",
+      "target": "karp, brad s",
+      "weight": 16
+    },
+    {
+      "source": "maria luisa",
+      "target": "steve bannon",
+      "weight": 13
+    },
+    {
+      "source": "ingram, david (reuters news)",
+      "target": "martin g. weinberg",
+      "weight": 24
+    },
+    {
+      "source": "boris nikolic (bgc3)",
+      "target": "jeffrey epstein",
+      "weight": 19
+    },
+    {
+      "source": "a",
+      "target": "jeffrey epstein",
+      "weight": 15
+    },
+    {
+      "source": "es",
+      "target": "jeffrey epstein",
+      "weight": 15
+    },
+    {
+      "source": "barry j. cohen",
+      "target": "jeffrey epstein",
+      "weight": 21
+    },
+    {
+      "source": "kirsty mackenzie",
+      "target": "peggy siegal",
+      "weight": 4
+    },
+    {
+      "source": "bruce moskowitz",
+      "target": "jeffrey epstein",
+      "weight": 11
+    },
+    {
+      "source": "jeffrey epstein",
+      "target": "noam chomsky",
+      "weight": 34
+    },
+    {
+      "source": "lawrence krauss",
+      "target": "noam chomsky",
+      "weight": 19
+    },
+    {
+      "source": "jeffrey epstein",
+      "target": "landon thomas",
+      "weight": 14
+    },
+    {
+      "source": "landon thomas",
+      "target": "thomas jr., landon",
+      "weight": 4
+    },
+    {
+      "source": "jeffrey epstein",
+      "target": "steven hoffenberg",
+      "weight": 23
+    },
+    {
+      "source": "jeffrey epstein",
+      "target": "players2",
+      "weight": 4
+    },
+    {
+      "source": "jeffrey epstein",
+      "target": "michael, charles",
+      "weight": 7
+    },
+    {
+      "source": "joi ito",
+      "target": "lesley groff",
+      "weight": 2
+    },
+    {
+      "source": "jack goldberger",
+      "target": "tonja haddad coleman",
+      "weight": 3
+    },
+    {
+      "source": "jeffrey epstein",
+      "target": "linda stone",
+      "weight": 29
+    },
+    {
+      "source": "jeffrey epstein",
+      "target": "keyu jin",
+      "weight": 9
+    },
+    {
+      "source": "keyu jin",
+      "target": "larry summers",
+      "weight": 9
+    },
+    {
+      "source": "eric roth",
+      "target": "jeffrey epstein",
+      "weight": 18
+    },
+    {
+      "source": "jeffrey epstein",
+      "target": "lawrence summers",
+      "weight": 14
+    },
+    {
+      "source": "immelt, stephen j.",
+      "target": "jeffrey epstein",
+      "weight": 8
+    },
+    {
+      "source": "jeffrey epstein",
+      "target": "kathy",
+      "weight": 9
+    },
+    {
+      "source": "immelt, stephen j.",
+      "target": "kathy ruemmler",
+      "weight": 8
+    },
+    {
+      "source": "kathy",
+      "target": "kathy ruemmler",
+      "weight": 3
+    },
+    {
+      "source": "immelt, stephen j.",
+      "target": "kathy",
+      "weight": 4
+    },
+    {
+      "source": "etienne binant",
+      "target": "jeffrey epstein",
+      "weight": 29
+    },
+    {
+      "source": "darren indyke",
+      "target": "etienne binant",
+      "weight": 19
+    },
+    {
+      "source": "jeffrey epstein",
+      "target": "sultan bin sulayern",
+      "weight": 12
+    },
+    {
+      "source": "david schoen",
+      "target": "jeffrey epstein",
+      "weight": 31
+    },
+    {
+      "source": "jeffrey epstein",
+      "target": "rebecca watson",
+      "weight": 30
+    },
+    {
+      "source": "lawrence krauss",
+      "target": "rebecca watson",
+      "weight": 22
+    },
+    {
+      "source": "jeffrey",
+      "target": "lisa new",
+      "weight": 4
+    },
+    {
+      "source": "jeffrey",
+      "target": "larry visoski",
+      "weight": 25
+    },
+    {
+      "source": "jeffrey",
+      "target": "zubair khan",
+      "weight": 2
+    },
+    {
+      "source": "jeffrey epstein",
+      "target": "mosk, matthew",
+      "weight": 16
+    },
+    {
+      "source": "martin g. weinberg",
+      "target": "mosk, matthew",
+      "weight": 6
+    },
+    {
+      "source": "kathy ruemmler",
+      "target": "mosk, matthew",
+      "weight": 2
+    },
+    {
+      "source": "jeffrey epstein",
+      "target": "robert l. kuhn",
+      "weight": 13
+    },
+    {
+      "source": "robert kuhn",
+      "target": "robert l. kuhn",
+      "weight": 10
+    },
+    {
+      "source": "jeffrey epstein",
+      "target": "king, kathryn",
+      "weight": 2
+    },
+    {
+      "source": "jeffrey epstein",
+      "target": "miller, michael",
+      "weight": 14
+    },
+    {
+      "source": "jeffrey epstein",
+      "target": "katelyn wohlford",
+      "weight": 2
+    },
+    {
+      "source": "jeffrey epstein",
+      "target": "y. alp aslandogan",
+      "weight": 2
+    },
+    {
+      "source": "jeffrey epstein",
+      "target": "remzi kulen",
+      "weight": 2
+    },
+    {
+      "source": "jeffrey epstein",
+      "target": "weinstein, jason",
+      "weight": 2
+    },
+    {
+      "source": "jeffrey epstein",
+      "target": "osman oz.",
+      "weight": 2
+    },
+    {
+      "source": "erin billings",
+      "target": "jeffrey epstein",
+      "weight": 2
+    },
+    {
+      "source": "jeffrey epstein",
+      "target": "will bohlen",
+      "weight": 2
+    },
+    {
+      "source": "jeffrey epstein",
+      "target": "keough, michael",
+      "weight": 2
+    },
+    {
+      "source": "drake, william",
+      "target": "jeffrey epstein",
+      "weight": 2
+    },
+    {
+      "source": "king, kathryn",
+      "target": "reid weingarten",
+      "weight": 13
+    },
+    {
+      "source": "miller, michael",
+      "target": "reid weingarten",
+      "weight": 15
+    },
+    {
+      "source": "katelyn wohlford",
+      "target": "reid weingarten",
+      "weight": 10
+    },
+    {
+      "source": "reid weingarten",
+      "target": "y. alp aslandogan",
+      "weight": 11
+    },
+    {
+      "source": "reid weingarten",
+      "target": "remzi kulen",
+      "weight": 10
+    },
+    {
+      "source": "reid weingarten",
+      "target": "weinstein, jason",
+      "weight": 13
+    },
+    {
+      "source": "osman oz.",
+      "target": "reid weingarten",
+      "weight": 10
+    },
+    {
+      "source": "erin billings",
+      "target": "reid weingarten",
+      "weight": 10
+    },
+    {
+      "source": "reid weingarten",
+      "target": "will bohlen",
+      "weight": 12
+    },
+    {
+      "source": "keough, michael",
+      "target": "reid weingarten",
+      "weight": 13
+    },
+    {
+      "source": "drake, william",
+      "target": "reid weingarten",
+      "weight": 11
+    },
+    {
+      "source": "king, kathryn",
+      "target": "miller, michael",
+      "weight": 14
+    },
+    {
+      "source": "katelyn wohlford",
+      "target": "king, kathryn",
+      "weight": 12
+    },
+    {
+      "source": "king, kathryn",
+      "target": "y. alp aslandogan",
+      "weight": 13
+    },
+    {
+      "source": "king, kathryn",
+      "target": "remzi kulen",
+      "weight": 11
+    },
+    {
+      "source": "king, kathryn",
+      "target": "weinstein, jason",
+      "weight": 15
+    },
+    {
+      "source": "king, kathryn",
+      "target": "osman oz.",
+      "weight": 12
+    },
+    {
+      "source": "erin billings",
+      "target": "king, kathryn",
+      "weight": 11
+    },
+    {
+      "source": "king, kathryn",
+      "target": "will bohlen",
+      "weight": 14
+    },
+    {
+      "source": "keough, michael",
+      "target": "king, kathryn",
+      "weight": 15
+    },
+    {
+      "source": "drake, william",
+      "target": "king, kathryn",
+      "weight": 12
+    },
+    {
+      "source": "katelyn wohlford",
+      "target": "miller, michael",
+      "weight": 12
+    },
+    {
+      "source": "miller, michael",
+      "target": "y. alp aslandogan",
+      "weight": 13
+    },
+    {
+      "source": "miller, michael",
+      "target": "remzi kulen",
+      "weight": 11
+    },
+    {
+      "source": "miller, michael",
+      "target": "weinstein, jason",
+      "weight": 14
+    },
+    {
+      "source": "miller, michael",
+      "target": "osman oz.",
+      "weight": 12
+    },
+    {
+      "source": "erin billings",
+      "target": "miller, michael",
+      "weight": 11
+    },
+    {
+      "source": "miller, michael",
+      "target": "will bohlen",
+      "weight": 13
+    },
+    {
+      "source": "keough, michael",
+      "target": "miller, michael",
+      "weight": 14
+    },
+    {
+      "source": "drake, william",
+      "target": "miller, michael",
+      "weight": 12
+    },
+    {
+      "source": "katelyn wohlford",
+      "target": "y. alp aslandogan",
+      "weight": 12
+    },
+    {
+      "source": "katelyn wohlford",
+      "target": "remzi kulen",
+      "weight": 11
+    },
+    {
+      "source": "katelyn wohlford",
+      "target": "weinstein, jason",
+      "weight": 12
+    },
+    {
+      "source": "katelyn wohlford",
+      "target": "osman oz.",
+      "weight": 11
+    },
+    {
+      "source": "erin billings",
+      "target": "katelyn wohlford",
+      "weight": 10
+    },
+    {
+      "source": "katelyn wohlford",
+      "target": "will bohlen",
+      "weight": 11
+    },
+    {
+      "source": "katelyn wohlford",
+      "target": "keough, michael",
+      "weight": 12
+    },
+    {
+      "source": "drake, william",
+      "target": "katelyn wohlford",
+      "weight": 11
+    },
+    {
+      "source": "remzi kulen",
+      "target": "y. alp aslandogan",
+      "weight": 11
+    },
+    {
+      "source": "weinstein, jason",
+      "target": "y. alp aslandogan",
+      "weight": 13
+    },
+    {
+      "source": "osman oz.",
+      "target": "y. alp aslandogan",
+      "weight": 11
+    },
+    {
+      "source": "erin billings",
+      "target": "y. alp aslandogan",
+      "weight": 10
+    },
+    {
+      "source": "will bohlen",
+      "target": "y. alp aslandogan",
+      "weight": 12
+    },
+    {
+      "source": "keough, michael",
+      "target": "y. alp aslandogan",
+      "weight": 13
+    },
+    {
+      "source": "drake, william",
+      "target": "y. alp aslandogan",
+      "weight": 11
+    },
+    {
+      "source": "remzi kulen",
+      "target": "weinstein, jason",
+      "weight": 11
+    },
+    {
+      "source": "osman oz.",
+      "target": "remzi kulen",
+      "weight": 10
+    },
+    {
+      "source": "erin billings",
+      "target": "remzi kulen",
+      "weight": 9
+    },
+    {
+      "source": "remzi kulen",
+      "target": "will bohlen",
+      "weight": 10
+    },
+    {
+      "source": "keough, michael",
+      "target": "remzi kulen",
+      "weight": 11
+    },
+    {
+      "source": "drake, william",
+      "target": "remzi kulen",
+      "weight": 11
+    },
+    {
+      "source": "osman oz.",
+      "target": "weinstein, jason",
+      "weight": 12
+    },
+    {
+      "source": "erin billings",
+      "target": "weinstein, jason",
+      "weight": 11
+    },
+    {
+      "source": "weinstein, jason",
+      "target": "will bohlen",
+      "weight": 14
+    },
+    {
+      "source": "keough, michael",
+      "target": "weinstein, jason",
+      "weight": 15
+    },
+    {
+      "source": "drake, william",
+      "target": "weinstein, jason",
+      "weight": 12
+    },
+    {
+      "source": "erin billings",
+      "target": "osman oz.",
+      "weight": 11
+    },
+    {
+      "source": "osman oz.",
+      "target": "will bohlen",
+      "weight": 11
+    },
+    {
+      "source": "keough, michael",
+      "target": "osman oz.",
+      "weight": 12
+    },
+    {
+      "source": "drake, william",
+      "target": "osman oz.",
+      "weight": 11
+    },
+    {
+      "source": "erin billings",
+      "target": "will bohlen",
+      "weight": 10
+    },
+    {
+      "source": "erin billings",
+      "target": "keough, michael",
+      "weight": 11
+    },
+    {
+      "source": "drake, william",
+      "target": "erin billings",
+      "weight": 10
+    },
+    {
+      "source": "keough, michael",
+      "target": "will bohlen",
+      "weight": 14
+    },
+    {
+      "source": "drake, william",
+      "target": "will bohlen",
+      "weight": 11
+    },
+    {
+      "source": "drake, william",
+      "target": "keough, michael",
+      "weight": 12
+    },
+    {
+      "source": "darren indyke",
+      "target": "reid weingarten",
+      "weight": 5
+    },
+    {
+      "source": "jeffrey epstein",
+      "target": "ken starr",
+      "weight": 37
+    },
+    {
+      "source": "jeffrey epstein",
+      "target": "nicholas ribi",
+      "weight": 10
+    },
+    {
+      "source": "jeffrey epstein",
+      "target": "jeffrey epstein jeevacation",
+      "weight": 13
+    },
+    {
+      "source": "david grosof",
+      "target": "jeffrey epstein",
+      "weight": 16
+    },
+    {
+      "source": "ken starr",
+      "target": "martin weinberg",
+      "weight": 3
+    },
+    {
+      "source": "kathy ruemmler",
+      "target": "ken starr",
+      "weight": 3
+    },
+    {
+      "source": "alan dershowitz",
+      "target": "darren indyke",
+      "weight": 2
+    },
+    {
+      "source": "darren indyke",
+      "target": "ken starr",
+      "weight": 3
+    },
+    {
+      "source": "alan dershowitz",
+      "target": "ken starr",
+      "weight": 2
+    },
+    {
+      "source": "jeffrey epstein",
+      "target": "thomas jr., landon po",
+      "weight": 8
+    },
+    {
+      "source": "jeffrey epstein",
+      "target": "peter mandelson",
+      "weight": 13
+    },
+    {
+      "source": "asmallworld",
+      "target": "jeeproject",
+      "weight": 8
+    },
+    {
+      "source": "anasalrasheed",
+      "target": "jeffrey epstein",
+      "weight": 12
+    },
+    {
+      "source": "jeffrey epstein",
+      "target": "tonja haddad coleman",
+      "weight": 24
+    },
+    {
+      "source": "jeffrey epstein",
+      "target": "sharon churcher",
+      "weight": 18
+    },
+    {
+      "source": "darren indyke",
+      "target": "tonja haddad coleman",
+      "weight": 18
+    },
+    {
+      "source": "darren indyke",
+      "target": "sharon churcher",
+      "weight": 11
+    },
+    {
+      "source": "sharon churcher",
+      "target": "tonja haddad coleman",
+      "weight": 22
+    },
+    {
+      "source": "darren indyke",
+      "target": "fred haddad",
+      "weight": 6
+    },
+    {
+      "source": "fred haddad",
+      "target": "tonja haddad coleman",
+      "weight": 14
+    },
+    {
+      "source": "fred haddad",
+      "target": "sharon churcher",
+      "weight": 13
+    },
+    {
+      "source": "darren indyke",
+      "target": "debbie fein",
+      "weight": 8
+    },
+    {
+      "source": "debbie fein",
+      "target": "tonja haddad coleman",
+      "weight": 9
+    },
+    {
+      "source": "editorialstaff",
+      "target": "jeffrey epstein",
+      "weight": 13
+    },
+    {
+      "source": "jeffrey epstein",
+      "target": "stanley rosenberg",
+      "weight": 8
+    },
+    {
+      "source": "jeffrey epstein",
+      "target": "peter thiel",
+      "weight": 11
+    },
+    {
+      "source": "jeffrey epstein",
+      "target": "terry kafka",
+      "weight": 9
+    },
+    {
+      "source": "alireza ittihadieh",
+      "target": "jeffrey epstein",
+      "weight": 25
+    },
+    {
+      "source": "michael wolff",
+      "target": "mosk, matthew",
+      "weight": 6
+    },
+    {
+      "source": "anas alrasheed",
+      "target": "jeffrey epstein",
+      "weight": 9
+    },
+    {
+      "source": "kelly friendly",
+      "target": "lesley groff",
+      "weight": 2
+    },
+    {
+      "source": "jeffrey epstein",
+      "target": "kelly friendly",
+      "weight": 14
+    },
+    {
+      "source": "jabor y.",
+      "target": "jeffrey epstein",
+      "weight": 14
+    },
+    {
+      "source": "alan m. dershowitz",
+      "target": "mark cohen",
+      "weight": 7
+    },
+    {
+      "source": "alan m. dershowitz",
+      "target": "brett d. jaffe",
+      "weight": 6
+    },
+    {
+      "source": "alan m. dershowitz",
+      "target": "ny max",
+      "weight": 8
+    },
+    {
+      "source": "jeffrey epstein",
+      "target": "joscha bach",
+      "weight": 14
+    },
+    {
+      "source": "faith kates",
+      "target": "jeffrey epstein",
+      "weight": 33
+    },
+    {
+      "source": "gmax1",
+      "target": "jeffrey epstein",
+      "weight": 7
+    },
+    {
+      "source": "gmax",
+      "target": "gmax1",
+      "weight": 3
+    },
+    {
+      "source": "jeffrey epstein",
+      "target": "lang, caroline",
+      "weight": 29
+    },
+    {
+      "source": "darren indyke",
+      "target": "lang, caroline",
+      "weight": 13
+    },
+    {
+      "source": "etienne binant",
+      "target": "lang, caroline",
+      "weight": 16
+    },
+    {
+      "source": "jeffrey epstein",
+      "target": "paul barrett",
+      "weight": 19
+    },
+    {
+      "source": "paul barrett",
+      "target": "richard kahn",
+      "weight": 14
+    },
+    {
+      "source": "jeffrey epstein",
+      "target": "kathy ruemm|er",
+      "weight": 9
+    },
+    {
+      "source": "deepak chopra",
+      "target": "jeffrey epstein",
+      "weight": 40
+    },
+    {
+      "source": "jeffrey epstein",
+      "target": "paul krassner",
+      "weight": 41
+    },
+    {
+      "source": "al seckel",
+      "target": "jeffrey epstein",
+      "weight": 18
+    },
+    {
+      "source": "jeffrey epstein",
+      "target": "melanie spineila",
+      "weight": 9
+    },
+    {
+      "source": "jeffrey epstein",
+      "target": "steven pfeiffer",
+      "weight": 25
+    },
+    {
+      "source": "peggy siegal",
+      "target": "steven pfeiffer",
+      "weight": 11
+    },
+    {
+      "source": "brad s karp",
+      "target": "jeffrey epstein",
+      "weight": 7
+    },
+    {
+      "source": "jacquie johnson",
+      "target": "jeffrey epstein",
+      "weight": 11
+    },
+    {
+      "source": "michael",
+      "target": "michael, charles",
+      "weight": 2
+    },
+    {
+      "source": "darren",
+      "target": "michael",
+      "weight": 2
+    },
+    {
+      "source": "charles",
+      "target": "michael, charles",
+      "weight": 2
+    },
+    {
+      "source": "charles",
+      "target": "darren",
+      "weight": 2
+    },
+    {
+      "source": "darren",
+      "target": "darren indyke",
+      "weight": 8
+    },
+    {
+      "source": "darren",
+      "target": "michael, charles",
+      "weight": 2
+    },
+    {
+      "source": "david marin",
+      "target": "reid weingarten",
+      "weight": 11
+    },
+    {
+      "source": "david marin",
+      "target": "king, kathryn",
+      "weight": 13
+    },
+    {
+      "source": "david marin",
+      "target": "miller, michael",
+      "weight": 12
+    },
+    {
+      "source": "david marin",
+      "target": "katelyn wohlford",
+      "weight": 10
+    },
+    {
+      "source": "david marin",
+      "target": "y. alp aslandogan",
+      "weight": 11
+    },
+    {
+      "source": "david marin",
+      "target": "remzi kulen",
+      "weight": 9
+    },
+    {
+      "source": "david marin",
+      "target": "weinstein, jason",
+      "weight": 13
+    },
+    {
+      "source": "david marin",
+      "target": "osman oz.",
+      "weight": 10
+    },
+    {
+      "source": "david marin",
+      "target": "erin billings",
+      "weight": 9
+    },
+    {
+      "source": "david marin",
+      "target": "will bohlen",
+      "weight": 12
+    },
+    {
+      "source": "david marin",
+      "target": "keough, michael",
+      "weight": 13
+    },
+    {
+      "source": "david marin",
+      "target": "drake, william",
+      "weight": 10
+    },
+    {
+      "source": "jeffrey epstein",
+      "target": "lhsoffice",
+      "weight": 14
+    },
+    {
+      "source": "jeffrey epstein",
+      "target": "rivkin, david",
+      "weight": 13
+    },
+    {
+      "source": "rivkin, david",
+      "target": "steve bannon",
+      "weight": 8
+    },
+    {
+      "source": "ehud barak",
+      "target": "jeffrey epstein",
+      "weight": 27
+    },
+    {
+      "source": "jeffrey epstein",
+      "target": "parker, ashley",
+      "weight": 14
+    },
+    {
+      "source": "darren indyke",
+      "target": "parker, ashley",
+      "weight": 2
+    },
+    {
+      "source": "parker, ashley",
+      "target": "reid weingarten",
+      "weight": 8
+    },
+    {
+      "source": "jeffrey epstein",
+      "target": "jes staley",
+      "weight": 16
+    },
+    {
+      "source": "ken starr",
+      "target": "michael wolff",
+      "weight": 7
+    },
+    {
+      "source": "peggy siegal",
+      "target": "richard kahn",
+      "weight": 3
+    },
+    {
+      "source": "richard kahn",
+      "target": "steven pfeiffer",
+      "weight": 8
+    },
+    {
+      "source": "alan m. dershowitz",
+      "target": "martin g. weinberg",
+      "weight": 11
+    },
+    {
+      "source": "martin g. weinberg",
+      "target": "roy black",
+      "weight": 8
+    },
+    {
+      "source": "jack goldberger",
+      "target": "martin g. weinberg",
+      "weight": 9
+    },
+    {
+      "source": "eric roth",
+      "target": "richard kahn",
+      "weight": 2
+    },
+    {
+      "source": "dunlavey, dean (oc)",
+      "target": "jeffrey epstein",
+      "weight": 6
+    },
+    {
+      "source": "dunlavey, dean (oc)",
+      "target": "kathy ruemmler",
+      "weight": 5
+    },
+    {
+      "source": "ehud barak",
+      "target": "noam chomsky",
+      "weight": 3
+    },
+    {
+      "source": "elisa new",
+      "target": "jeffrey epstein",
+      "weight": 8
+    },
+    {
+      "source": "elisa new",
+      "target": "lisa new",
+      "weight": 8
+    },
+    {
+      "source": "jeffrey epstein",
+      "target": "michael reiter/palmbeach",
+      "weight": 21
+    },
+    {
+      "source": "matthew hiltzik",
+      "target": "michael wolff",
+      "weight": 7
+    },
+    {
+      "source": "jeffrey epstein",
+      "target": "matthew hiltzik",
+      "weight": 13
+    },
+    {
+      "source": "martin g. weinberg",
+      "target": "matt williams",
+      "weight": 8
+    },
+    {
+      "source": "martin weinberg",
+      "target": "matt williams",
+      "weight": 3
+    },
+    {
+      "source": "jeffrey epstein",
+      "target": "matt williams",
+      "weight": 5
+    },
+    {
+      "source": "alan m. dershowitz",
+      "target": "gmax",
+      "weight": 4
+    },
+    {
+      "source": "jeffrey epstein",
+      "target": "masha drokova",
+      "weight": 8
+    },
+    {
+      "source": "jeffrey epstein",
+      "target": "stephen hanson",
+      "weight": 8
+    },
+    {
+      "source": "ariane de rothschild",
+      "target": "jeffrey epstein",
+      "weight": 11
+    },
+    {
+      "source": "ens, amanda",
+      "target": "jeffrey epstein",
+      "weight": 23
+    },
+    {
+      "source": "ens, amanda",
+      "target": "richard kahn",
+      "weight": 13
+    },
+    {
+      "source": "hill, james e.",
+      "target": "jeffrey epstein",
+      "weight": 6
+    },
+    {
+      "source": "martin g. weinberg",
+      "target": "matthew hiltzik",
+      "weight": 2
+    },
+    {
+      "source": "hill, james e.",
+      "target": "martin g. weinberg",
+      "weight": 2
+    },
+    {
+      "source": "hill, james e.",
+      "target": "matthew hiltzik",
+      "weight": 2
+    },
+    {
+      "source": "darren indyke",
+      "target": "jack goldberger",
+      "weight": 11
+    },
+    {
+      "source": "howard rubenstein",
+      "target": "jeffrey epstein",
+      "weight": 19
+    },
+    {
+      "source": "jeffrey epstein",
+      "target": "robert d. critton jr.",
+      "weight": 15
+    },
+    {
+      "source": "darren indyke",
+      "target": "howard rubenstein",
+      "weight": 10
+    },
+    {
+      "source": "darren indyke",
+      "target": "robert d. critton jr.",
+      "weight": 2
+    },
+    {
+      "source": "darren",
+      "target": "jack goldberger",
+      "weight": 2
+    },
+    {
+      "source": "howard rubenstein",
+      "target": "jack goldberger",
+      "weight": 4
+    },
+    {
+      "source": "jack goldberger",
+      "target": "robert d. critton jr.",
+      "weight": 3
+    },
+    {
+      "source": "darren",
+      "target": "howard rubenstein",
+      "weight": 5
+    },
+    {
+      "source": "howard rubenstein",
+      "target": "robert d. critton jr.",
+      "weight": 2
+    },
+    {
+      "source": "hill, james e.",
+      "target": "martin weinberg",
+      "weight": 4
+    },
+    {
+      "source": "hill, james e.",
+      "target": "kathy ruemmler",
+      "weight": 3
+    },
+    {
+      "source": "preate alexandra",
+      "target": "steve bannon",
+      "weight": 8
+    },
+    {
+      "source": "maria luisa",
+      "target": "preate alexandra",
+      "weight": 8
+    },
+    {
+      "source": "jeffrey epstein",
+      "target": "stephanie",
+      "weight": 4
+    },
+    {
+      "source": "grossman, andrew m",
+      "target": "jeffrey epstein",
+      "weight": 8
+    },
+    {
+      "source": "grossman, andrew m",
+      "target": "steve bannon",
+      "weight": 5
+    },
+    {
+      "source": "grossman, andrew m",
+      "target": "rivkin, david",
+      "weight": 9
+    },
+    {
+      "source": "david pegg",
+      "target": "jeffrey",
+      "weight": 4
+    },
+    {
+      "source": "jessica cadwell",
+      "target": "robert d. critton jr.",
+      "weight": 8
+    },
+    {
+      "source": "jacquie johnson",
+      "target": "robert d. critton jr.",
+      "weight": 5
+    },
+    {
+      "source": "lesley groff",
+      "target": "martin g. weinberg",
+      "weight": 2
+    },
+    {
+      "source": "lesley groff",
+      "target": "martin weinberg",
+      "weight": 2
+    },
+    {
+      "source": "ingram, david (reuters news)",
+      "target": "lesley groff",
+      "weight": 2
+    },
+    {
+      "source": "david pegg",
+      "target": "martin weinberg",
+      "weight": 4
+    },
+    {
+      "source": "jeffrey",
+      "target": "martin weinberg",
+      "weight": 2
+    },
+    {
+      "source": "jeffrey epstein",
+      "target": "jide zeitlin",
+      "weight": 8
+    },
+    {
+      "source": "jeffrey",
+      "target": "lesley groff",
+      "weight": 4
+    },
+    {
+      "source": "landon thomas, jr.",
+      "target": "thomas jr., landon",
+      "weight": 5
+    },
+    {
+      "source": "daniel siad",
+      "target": "jeffrey epstein",
+      "weight": 9
+    },
+    {
+      "source": "martin weinberg",
+      "target": "michael reiter/palmbeach",
+      "weight": 7
+    },
+    {
+      "source": "alan m. dershowitz",
+      "target": "michael reiter/palmbeach",
+      "weight": 11
+    },
+    {
+      "source": "alan dershowitz",
+      "target": "mark cohen",
+      "weight": 2
+    },
+    {
+      "source": "alan dershowitz",
+      "target": "brett d. jaffe",
+      "weight": 3
+    },
+    {
+      "source": "alan dershowitz",
+      "target": "ny max",
+      "weight": 2
+    },
+    {
+      "source": "fred haddad",
+      "target": "jeffrey epstein",
+      "weight": 9
+    },
+    {
+      "source": "larry visoski",
+      "target": "rich kahn",
+      "weight": 5
+    },
+    {
+      "source": "debbie fein",
+      "target": "jeffrey epstein",
+      "weight": 7
+    },
+    {
+      "source": "debbie fein",
+      "target": "sharon churcher",
+      "weight": 6
+    },
+    {
+      "source": "debbie fein",
+      "target": "fred haddad",
+      "weight": 5
+    },
+    {
+      "source": "ken starr",
+      "target": "matthew hiltzik",
+      "weight": 4
+    },
+    {
+      "source": "lesley groff",
+      "target": "stephanie",
+      "weight": 3
+    },
+    {
+      "source": "larry",
+      "target": "lesley groff",
+      "weight": 5
+    },
+    {
+      "source": "darren indyke",
+      "target": "larry",
+      "weight": 3
+    },
+    {
+      "source": "larry",
+      "target": "rich kahn",
+      "weight": 3
+    },
+    {
+      "source": "larry visoski",
+      "target": "lesley groff",
+      "weight": 2
+    },
+    {
+      "source": "benjamin harnwell",
+      "target": "jeffrey epstein",
+      "weight": 12
+    },
+    {
+      "source": "benjamin harnwell",
+      "target": "steve bannon",
+      "weight": 13
+    },
+    {
+      "source": "jeffrey epstein",
+      "target": "maria luisa",
+      "weight": 2
+    },
+    {
+      "source": "benjamin harnwell",
+      "target": "maria luisa",
+      "weight": 3
+    },
+    {
+      "source": "ken starr",
+      "target": "lesley groff",
+      "weight": 2
+    },
+    {
+      "source": "jeffrey epstein",
+      "target": "richard merkin",
+      "weight": 8
+    },
+    {
+      "source": "ens, amanda",
+      "target": "rich kahn",
+      "weight": 7
+    },
+    {
+      "source": "barbro c ehnbom",
+      "target": "jeffrey epstein",
+      "weight": 18
+    },
+    {
+      "source": "barbro ehnbom",
+      "target": "jeffrey epstein",
+      "weight": 11
+    },
+    {
+      "source": "barbro c ehnbom",
+      "target": "barbro ehnbom",
+      "weight": 4
+    },
+    {
+      "source": "nicholas ribi",
+      "target": "nicholas ribis",
+      "weight": 2
+    },
+    {
+      "source": "jeffrey epstein",
+      "target": "vinit sahni",
+      "weight": 22
+    },
+    {
+      "source": "darren indyke",
+      "target": "miller, michael",
+      "weight": 7
+    },
+    {
+      "source": "darren indyke",
+      "target": "roy black",
+      "weight": 2
+    },
+    {
+      "source": "lhs",
+      "target": "lhsoffice",
+      "weight": 9
+    },
+    {
+      "source": "jeffrey epstein",
+      "target": "leon black",
+      "weight": 8
+    },
+    {
+      "source": "kathy ruemmler",
+      "target": "steve bannon",
+      "weight": 7
+    },
+    {
+      "source": "darren indyke",
+      "target": "david pegg",
+      "weight": 2
+    },
+    {
+      "source": "lisa new",
+      "target": "michael wolff",
+      "weight": 5
+    },
+    {
+      "source": "thomas jr., landon",
+      "target": "thomas jr., landon po",
+      "weight": 3
+    },
+    {
+      "source": "jeffrey epstein",
+      "target": "mark l. epstein",
+      "weight": 10
+    },
+    {
+      "source": "jeffrey epstein",
+      "target": "the duke",
+      "weight": 22
+    },
+    {
+      "source": "mark cohen",
+      "target": "the duke",
+      "weight": 6
+    },
+    {
+      "source": "brett d. jaffe",
+      "target": "the duke",
+      "weight": 5
+    },
+    {
+      "source": "gmax",
+      "target": "the duke",
+      "weight": 8
+    },
+    {
+      "source": "ny max",
+      "target": "the duke",
+      "weight": 6
+    },
+    {
+      "source": "michael wolff",
+      "target": "richard kahn",
+      "weight": 2
+    },
+    {
+      "source": "jeffrey",
+      "target": "richard kahn",
+      "weight": 4
+    },
+    {
+      "source": "jeffrey",
+      "target": "steven pfeiffer",
+      "weight": 3
+    },
+    {
+      "source": "jeffrey epstein",
+      "target": "leon",
+      "weight": 6
+    },
+    {
+      "source": "jeffrey",
+      "target": "robert kuhn",
+      "weight": 4
+    },
+    {
+      "source": "jeffrey",
+      "target": "robert l. kuhn",
+      "weight": 4
+    },
+    {
+      "source": "leon",
+      "target": "melanie spinella",
+      "weight": 4
+    },
+    {
+      "source": "jeffrey epstein",
+      "target": "richard kahn [i",
+      "weight": 9
+    },
+    {
+      "source": "gary h. baise",
+      "target": "steven hoffenberg",
+      "weight": 7
+    },
+    {
+      "source": "martin weinberg",
+      "target": "steven hoffenberg",
+      "weight": 2
+    },
+    {
+      "source": "jack lang",
+      "target": "jeffrey epstein",
+      "weight": 11
+    },
+    {
+      "source": "larry summers",
+      "target": "lawrence summers",
+      "weight": 5
+    },
+    {
+      "source": "jeffrey epstein",
+      "target": "mohamed waheed hassan",
+      "weight": 16
+    },
+    {
+      "source": "lesley groff",
+      "target": "lisa new",
+      "weight": 7
+    },
+    {
+      "source": "jeffrey epstein",
+      "target": "magdalena schuster",
+      "weight": 6
+    },
+    {
+      "source": "jeffrey epstein",
+      "target": "kevin frost",
+      "weight": 12
+    },
+    {
+      "source": "boris nikolic",
+      "target": "magdalena schuster",
+      "weight": 10
+    },
+    {
+      "source": "boris nikolic",
+      "target": "kevin frost",
+      "weight": 15
+    },
+    {
+      "source": "kevin frost",
+      "target": "magdalena schuster",
+      "weight": 13
+    },
+    {
+      "source": "jeffrey epstein",
+      "target": "peter aldhous",
+      "weight": 4
+    },
+    {
+      "source": "gary h. baise",
+      "target": "jeffrey epstein",
+      "weight": 5
+    },
+    {
+      "source": "darren indyke",
+      "target": "gary h. baise",
+      "weight": 4
+    },
+    {
+      "source": "jes staley",
+      "target": "john mcfarlane",
+      "weight": 10
+    },
+    {
+      "source": "jes staley",
+      "target": "staley, jes: barclays (ldn)",
+      "weight": 6
+    },
+    {
+      "source": "john mcfarlane",
+      "target": "staley, jes: barclays (ldn)",
+      "weight": 13
+    },
+    {
+      "source": "barry j. cohen",
+      "target": "melanie spinella",
+      "weight": 7
+    },
+    {
+      "source": "jeffrey epstein",
+      "target": "lilly sanchez",
+      "weight": 16
+    },
+    {
+      "source": "jessica cadwell",
+      "target": "martin weinberg",
+      "weight": 3
+    },
+    {
+      "source": "martin weinberg",
+      "target": "robert d. critton jr.",
+      "weight": 3
+    },
+    {
+      "source": "alan m. dershowitz",
+      "target": "jessica cadwell",
+      "weight": 4
+    },
+    {
+      "source": "alan m. dershowitz",
+      "target": "robert d. critton jr.",
+      "weight": 5
+    },
+    {
+      "source": "jessica cadwell",
+      "target": "michael reiter/palmbeach",
+      "weight": 4
+    },
+    {
+      "source": "michael reiter/palmbeach",
+      "target": "robert d. critton jr.",
+      "weight": 5
+    },
+    {
+      "source": "al seckel",
+      "target": "jeffrey",
+      "weight": 6
+    },
+    {
+      "source": "jeffrey epstein",
+      "target": "nadia",
+      "weight": 11
+    },
+    {
+      "source": "jeffrey epstein",
+      "target": "vinoda basnayake",
+      "weight": 4
+    },
+    {
+      "source": "jeffrey epstein",
+      "target": "philip kafka",
+      "weight": 5
+    },
+    {
+      "source": "kirsty mackenzie",
+      "target": "martin weinberg",
+      "weight": 2
+    },
+    {
+      "source": "g maxwell",
+      "target": "gmax1",
+      "weight": 2
+    },
+    {
+      "source": "ada clapp",
+      "target": "jeffrey epstein",
+      "weight": 8
+    },
+    {
+      "source": "bill siegel",
+      "target": "jeffrey epstein",
+      "weight": 15
+    },
+    {
+      "source": "darren indyke",
+      "target": "richard kahn",
+      "weight": 5
+    },
+    {
+      "source": "darren lndyke",
+      "target": "martin weinberg",
+      "weight": 5
+    },
+    {
+      "source": "bradley j. edwards",
+      "target": "jeffrey epstein",
+      "weight": 5
+    },
+    {
+      "source": "brad wechsler",
+      "target": "lesley groff",
+      "weight": 3
+    },
+    {
+      "source": "rich kahn",
+      "target": "richard kahn",
+      "weight": 3
+    },
+    {
+      "source": "ingram, david (reuters news)",
+      "target": "michael wolff",
+      "weight": 4
+    },
+    {
+      "source": "barbro c. ehnbom",
+      "target": "jeffrey epstein",
+      "weight": 15
+    },
+    {
+      "source": "barbro c. ehnbom",
+      "target": "barbro ehnbom",
+      "weight": 3
+    },
+    {
+      "source": "barbro c ehnbom",
+      "target": "barbro c. ehnbom",
+      "weight": 6
+    },
+    {
+      "source": "ken starr",
+      "target": "lilly sanchez",
+      "weight": 2
+    },
+    {
+      "source": "christina galbraith",
+      "target": "jeffrey",
+      "weight": 2
+    },
+    {
+      "source": "larry",
+      "target": "larry visoski",
+      "weight": 2
+    },
+    {
+      "source": "peggy siegal",
+      "target": "rich kahn",
+      "weight": 2
+    },
+    {
+      "source": "rich kahn",
+      "target": "steven pfeiffer",
+      "weight": 2
+    },
+    {
+      "source": "gmax",
+      "target": "jack goldberger",
+      "weight": 2
+    },
+    {
+      "source": "gmax",
+      "target": "kirsty mackenzie",
+      "weight": 2
+    },
+    {
+      "source": "jeffrey",
+      "target": "melanie walker",
+      "weight": 3
+    },
+    {
+      "source": "elisa new",
+      "target": "jeffrey",
+      "weight": 2
+    },
+    {
+      "source": "jean luc brunel",
+      "target": "jeffrey epstein",
+      "weight": 5
+    },
+    {
+      "source": "jack goldberger",
+      "target": "peter mandelson",
+      "weight": 3
+    },
+    {
+      "source": "kirsty mackenzie",
+      "target": "peter mandelson",
+      "weight": 2
+    },
+    {
+      "source": "darren indyke",
+      "target": "ingram, david (reuters news)",
+      "weight": 2
+    },
+    {
+      "source": "jeffrey epstein",
+      "target": "maskin, eric",
+      "weight": 4
+    },
+    {
+      "source": "larry summers",
+      "target": "lhs",
+      "weight": 4
+    },
+    {
+      "source": "larry summers",
+      "target": "maskin, eric",
+      "weight": 5
+    },
+    {
+      "source": "lhs",
+      "target": "maskin, eric",
+      "weight": 5
+    },
+    {
+      "source": "lesley groff",
+      "target": "melanie spinella",
+      "weight": 2
+    },
+    {
+      "source": "lilly sanchez",
+      "target": "martin weinberg",
+      "weight": 2
+    },
+    {
+      "source": "ken starr",
+      "target": "reid weingarten",
+      "weight": 2
+    },
+    {
+      "source": "alan dershowitz",
+      "target": "martin g. weinberg",
+      "weight": 2
+    },
+    {
+      "source": "hs",
+      "target": "lhsoffice",
+      "weight": 4
+    },
+    {
+      "source": "benjamin harnwell",
+      "target": "preate alexandra",
+      "weight": 2
+    },
+    {
+      "source": "sultan bin sulayem",
+      "target": "sultan bin sulayern",
+      "weight": 3
+    },
+    {
+      "source": "boris nikolic",
+      "target": "jean luc brunel",
+      "weight": 2
+    },
+    {
+      "source": "a",
+      "target": "i",
+      "weight": 2
+    },
+    {
+      "source": "lhsoffice",
+      "target": "maskin, eric",
+      "weight": 2
+    },
+    {
+      "source": "kathy ruemmler",
+      "target": "miller, michael",
+      "weight": 2
+    },
+    {
+      "source": "peggy siegal",
+      "target": "steve bannon",
+      "weight": 2
+    },
+    {
+      "source": "darren indyke",
+      "target": "jeffrey",
+      "weight": 2
+    },
+    {
+      "source": "etienne binant",
+      "target": "jeffrey",
+      "weight": 2
+    },
+    {
+      "source": "jeffrey",
+      "target": "lang, caroline",
+      "weight": 2
+    },
+    {
+      "source": "michael",
+      "target": "philip kafka",
+      "weight": 2
+    },
+    {
+      "source": "michael",
+      "target": "terry kafka",
+      "weight": 2
+    },
+    {
+      "source": "jack lang",
+      "target": "jeffrey",
+      "weight": 2
+    },
+    {
+      "source": "jack goldberger",
+      "target": "kathy ruemmler",
+      "weight": 2
+    },
+    {
+      "source": "jeffrey",
+      "target": "jonathan farkas",
+      "weight": 3
+    },
+    {
+      "source": "kathy ruemmler",
+      "target": "rivkin, david",
+      "weight": 3
+    },
+    {
+      "source": "larry",
+      "target": "melanie spinella",
+      "weight": 2
+    },
+    {
+      "source": "ada clapp",
+      "target": "barry j. cohen",
+      "weight": 3
+    }
+  ]
+};
+    
+    // Scene setup
+    const scene = new THREE.Scene();
+    scene.background = new THREE.Color(0x0a0a15);
+    
+    const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 5000);
+    camera.position.set(0, 0, 400);
+    
+    const renderer = new THREE.WebGLRenderer({ antialias: true });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setPixelRatio(window.devicePixelRatio);
+    document.body.appendChild(renderer.domElement);
+    
+    const controls = new THREE.OrbitControls(camera, renderer.domElement);
+    controls.enableDamping = true;
+    controls.dampingFactor = 0.05;
+    
+    // Cluster colors
+    const clusterColors = [
+        0xff6b6b, 0x4ecdc4, 0xffe66d, 0x95e1d3, 
+        0xf38181, 0xaa96da, 0xfcbad3, 0xa8d8ea,
+        0xffd3b6, 0xc9b1ff, 0x98ddca, 0xffaaa5
+    ];
+    
+    // Create nodes
+    const nodes = {};
+    const nodePositions = {};
+    const nodeGroup = new THREE.Group();
+    
+    // Random sphere layout
+    graphData.nodes.forEach((node, i) => {
+        const phi = Math.acos(-1 + (2 * i) / graphData.nodes.length);
+        const theta = Math.sqrt(graphData.nodes.length * Math.PI) * phi;
+        const radius = 150 + Math.random() * 50;
+        
+        const x = radius * Math.cos(theta) * Math.sin(phi);
+        const y = radius * Math.sin(theta) * Math.sin(phi);
+        const z = radius * Math.cos(phi);
+        
+        nodePositions[node.id] = { x, y, z };
+        
+        const size = 2 + Math.log(node.mentions + 1) * 1.5;
+        const geometry = new THREE.SphereGeometry(size, 16, 16);
+        const color = clusterColors[node.cluster % clusterColors.length];
+        const material = new THREE.MeshPhongMaterial({ 
+            color: color,
+            emissive: color,
+            emissiveIntensity: 0.3
+        });
+        
+        const mesh = new THREE.Mesh(geometry, material);
+        mesh.position.set(x, y, z);
+        mesh.userData = node;
+        
+        nodes[node.id] = mesh;
+        nodeGroup.add(mesh);
+    });
+    
+    scene.add(nodeGroup);
+    
+    // Create edges
+    const edgeGroup = new THREE.Group();
+    graphData.edges.forEach(edge => {
+        const start = nodePositions[edge.source];
+        const end = nodePositions[edge.target];
+        if (!start || !end) return;
+        
+        const points = [
+            new THREE.Vector3(start.x, start.y, start.z),
+            new THREE.Vector3(end.x, end.y, end.z)
+        ];
+        
+        const geometry = new THREE.BufferGeometry().setFromPoints(points);
+        const opacity = Math.min(0.6, 0.1 + edge.weight / 50);
+        const material = new THREE.LineBasicMaterial({ 
+            color: 0x4488ff,
+            transparent: true,
+            opacity: opacity
+        });
+        
+        const line = new THREE.Line(geometry, material);
+        edgeGroup.add(line);
+    });
+    
+    scene.add(edgeGroup);
+    
+    // Lighting
+    const ambient = new THREE.AmbientLight(0xffffff, 0.4);
+    scene.add(ambient);
+    
+    const point1 = new THREE.PointLight(0xffffff, 0.8);
+    point1.position.set(200, 200, 200);
+    scene.add(point1);
+    
+    const point2 = new THREE.PointLight(0x4488ff, 0.5);
+    point2.position.set(-200, -200, -200);
+    scene.add(point2);
+    
+    // Raycaster for interaction
+    const raycaster = new THREE.Raycaster();
+    const mouse = new THREE.Vector2();
+    const tooltip = document.getElementById('tooltip');
+    
+    function onMouseMove(event) {
+        mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+        mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+        
+        raycaster.setFromCamera(mouse, camera);
+        const intersects = raycaster.intersectObjects(nodeGroup.children);
+        
+        if (intersects.length > 0) {
+            const node = intersects[0].object.userData;
+            tooltip.style.display = 'block';
+            tooltip.style.left = event.clientX + 15 + 'px';
+            tooltip.style.top = event.clientY + 15 + 'px';
+            tooltip.innerHTML = `
+                <strong>${node.name}</strong><br>
+                Threads: ${node.mentions}<br>
+                Connections: ${node.connections}
+            `;
+            document.body.style.cursor = 'pointer';
+        } else {
+            tooltip.style.display = 'none';
+            document.body.style.cursor = 'default';
+        }
+    }
+    
+    window.addEventListener('mousemove', onMouseMove);
+    
+    // Resize handler
+    window.addEventListener('resize', () => {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+    
+    // Animation
+    function animate() {
+        requestAnimationFrame(animate);
+        controls.update();
+        nodeGroup.rotation.y += 0.001;
+        renderer.render(scene, camera);
+    }
+    
+    animate();
+    </script>
+</body>
+</html>
