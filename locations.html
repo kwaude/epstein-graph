@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Location Network - Epstein Files</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #0a0a0f;
+            color: #e0e0e0;
+            min-height: 100vh;
+        }
+        .container {
+            display: flex;
+            height: 100vh;
+        }
+        .sidebar {
+            width: 400px;
+            background: #0a0a0f;
+            padding: 30px;
+            overflow-y: auto;
+            border-right: 1px solid #2a2a3a;
+        }
+        h1 {
+            font-size: 1.6rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 8px;
+        }
+        .subtitle { color: #888; margin-bottom: 24px; font-size: 0.9rem; }
+        .back-link {
+            display: inline-block;
+            color: #667eea;
+            text-decoration: none;
+            padding: 8px 14px;
+            border: 1px solid #667eea;
+            border-radius: 6px;
+            margin-bottom: 24px;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+        }
+        .back-link:hover {
+            background: #667eea;
+            color: #fff;
+        }
+        .stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+        .stat {
+            background: #12121a;
+            border: 1px solid #2a2a3a;
+            border-radius: 8px;
+            padding: 14px;
+        }
+        .stat-value {
+            font-size: 1.4rem;
+            font-weight: bold;
+            color: #667eea;
+        }
+        .stat-label {
+            color: #888;
+            font-size: 0.8rem;
+            margin-top: 4px;
+        }
+        .location-list {
+            margin-top: 24px;
+        }
+        .location-item {
+            background: #12121a;
+            border: 1px solid #2a2a3a;
+            border-radius: 10px;
+            padding: 16px;
+            margin-bottom: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .location-item:hover {
+            border-color: #667eea;
+        }
+        .location-item.active {
+            border-color: #667eea;
+            box-shadow: 0 0 20px rgba(102, 126, 234, 0.2);
+        }
+        .location-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+        .location-name {
+            font-weight: 600;
+            color: #fff;
+        }
+        .location-type {
+            font-size: 0.75rem;
+            padding: 3px 8px;
+            border-radius: 4px;
+            background: #1a1a24;
+            color: #888;
+            text-transform: uppercase;
+        }
+        .location-stats {
+            display: flex;
+            gap: 16px;
+            font-size: 0.85rem;
+            color: #888;
+            margin-bottom: 10px;
+        }
+        .location-stats span {
+            color: #96CEB4;
+        }
+        .location-people {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+        .person-tag {
+            font-size: 0.75rem;
+            padding: 3px 8px;
+            background: #1a1a24;
+            border: 1px solid #2a2a3a;
+            border-radius: 4px;
+            color: #aaa;
+        }
+        .more-people {
+            color: #667eea;
+            font-size: 0.75rem;
+            padding: 3px 8px;
+        }
+        #map {
+            flex: 1;
+            background: #12121a;
+        }
+        .leaflet-popup-content-wrapper {
+            background: rgba(10, 10, 15, 0.95);
+            border: 1px solid #667eea;
+            border-radius: 8px;
+        }
+        .leaflet-popup-content {
+            color: #e0e0e0;
+            margin: 12px;
+        }
+        .leaflet-popup-tip {
+            background: rgba(10, 10, 15, 0.95);
+        }
+        .popup-title {
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 8px;
+        }
+        .popup-stats {
+            margin-bottom: 10px;
+            color: #aaa;
+        }
+        .popup-people {
+            font-size: 0.85rem;
+            color: #ccc;
+            line-height: 1.5;
+        }
+        @media (max-width: 900px) {
+            .container { flex-direction: column; }
+            .sidebar { 
+                width: 100%; 
+                height: 50vh;
+                order: 2;
+            }
+            #map { height: 50vh; order: 1; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="sidebar">
+            <a href="index.html" class="back-link">← Back to Index</a>
+            <h1>📍 Location Network</h1>
+            <p class="subtitle">Locations mentioned in the Epstein files and associated individuals</p>
+            
+            <div class="stats">
+                <div class="stat">
+                    <div class="stat-value" id="totalLocations">0</div>
+                    <div class="stat-label">Locations</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value" id="totalMentions">0</div>
+                    <div class="stat-label">Total Mentions</div>
+                </div>
+            </div>
+            
+            <div class="location-list" id="locationList">
+                Loading locations...
+            </div>
+        </div>
+        
+        <div id="map"></div>
+    </div>
+    
+    <script>
+        let locations = [];
+        let map, markers = {};
+        
+        async function init() {
+            // Initialize map with dark theme
+            map = L.map('map', {
+                center: [30, -40],
+                zoom: 3,
+                zoomControl: true
+            });
+            
+            L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+                subdomains: 'abcd',
+                maxZoom: 20
+            }).addTo(map);
+            
+            try {
+                const response = await fetch('data/expanded/locations.json');
+                locations = await response.json();
+                
+                document.getElementById('totalLocations').textContent = locations.length;
+                document.getElementById('totalMentions').textContent = 
+                    locations.reduce((sum, l) => sum + l.mention_count, 0).toLocaleString();
+                
+                renderLocations();
+                addMarkers();
+                
+            } catch (e) {
+                document.getElementById('locationList').innerHTML = 
+                    '<div style="color: #666">Error loading data: ' + e.message + '</div>';
+            }
+        }
+        
+        function renderLocations() {
+            const html = locations.map((loc, idx) => {
+                const displayPeople = loc.associated_people.slice(0, 5);
+                const morePeople = loc.associated_people.length - 5;
+                
+                return `
+                    <div class="location-item" data-idx="${idx}" onclick="focusLocation(${idx})">
+                        <div class="location-header">
+                            <span class="location-name">${loc.name}</span>
+                            <span class="location-type">${loc.type}</span>
+                        </div>
+                        <div class="location-stats">
+                            <span>${loc.mention_count}</span> mentions · 
+                            <span>${loc.thread_count}</span> threads
+                        </div>
+                        <div class="location-people">
+                            ${displayPeople.map(p => `<span class="person-tag">${escapeHtml(p)}</span>`).join('')}
+                            ${morePeople > 0 ? `<span class="more-people">+${morePeople} more</span>` : ''}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+            
+            document.getElementById('locationList').innerHTML = html;
+        }
+        
+        function addMarkers() {
+            const maxMentions = Math.max(...locations.map(l => l.mention_count));
+            
+            locations.forEach((loc, idx) => {
+                // Scale marker size based on mentions
+                const size = 10 + (loc.mention_count / maxMentions) * 30;
+                
+                const icon = L.divIcon({
+                    className: 'custom-marker',
+                    html: `<div style="
+                        width: ${size}px;
+                        height: ${size}px;
+                        background: rgba(102, 126, 234, 0.7);
+                        border: 2px solid #667eea;
+                        border-radius: 50%;
+                        box-shadow: 0 0 ${size/2}px rgba(102, 126, 234, 0.5);
+                    "></div>`,
+                    iconSize: [size, size],
+                    iconAnchor: [size/2, size/2]
+                });
+                
+                const marker = L.marker([loc.lat, loc.lng], { icon })
+                    .addTo(map)
+                    .bindPopup(`
+                        <div class="popup-title">${loc.name}</div>
+                        <div class="popup-stats">
+                            ${loc.mention_count} mentions · ${loc.thread_count} threads
+                        </div>
+                        <div class="popup-people">
+                            <strong>Associated:</strong><br>
+                            ${loc.associated_people.slice(0, 10).join(', ')}
+                            ${loc.associated_people.length > 10 ? `<br>+${loc.associated_people.length - 10} more` : ''}
+                        </div>
+                    `);
+                
+                marker.on('click', () => {
+                    document.querySelectorAll('.location-item').forEach(el => el.classList.remove('active'));
+                    document.querySelector(`.location-item[data-idx="${idx}"]`)?.classList.add('active');
+                });
+                
+                markers[idx] = marker;
+            });
+        }
+        
+        function focusLocation(idx) {
+            const loc = locations[idx];
+            map.flyTo([loc.lat, loc.lng], 6, { duration: 1 });
+            markers[idx].openPopup();
+            
+            document.querySelectorAll('.location-item').forEach(el => el.classList.remove('active'));
+            document.querySelector(`.location-item[data-idx="${idx}"]`)?.classList.add('active');
+        }
+        
+        function escapeHtml(text) {
+            if (!text) return '';
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+        
+        init();
+    </script>
+</body>
+</html>

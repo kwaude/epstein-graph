@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Topic Explorer - Epstein Files</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #0a0a0f;
+            color: #e0e0e0;
+            overflow: hidden;
+        }
+        #container { width: 100vw; height: 100vh; }
+        #info {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(10, 10, 15, 0.95);
+            border: 1px solid #2a2a3a;
+            border-radius: 12px;
+            padding: 20px;
+            max-width: 350px;
+            z-index: 100;
+        }
+        h1 {
+            font-size: 1.4rem;
+            margin-bottom: 8px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .subtitle { color: #888; font-size: 0.9rem; margin-bottom: 16px; }
+        #tooltip {
+            position: absolute;
+            background: rgba(10, 10, 15, 0.95);
+            border: 1px solid #667eea;
+            border-radius: 8px;
+            padding: 12px;
+            max-width: 400px;
+            font-size: 0.85rem;
+            pointer-events: none;
+            display: none;
+            z-index: 200;
+        }
+        #tooltip .subject { color: #667eea; font-weight: bold; margin-bottom: 6px; }
+        #tooltip .sender { color: #aaa; margin-bottom: 8px; }
+        #tooltip .preview { color: #ccc; line-height: 1.4; }
+        #tooltip .cluster { 
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            margin-top: 8px;
+        }
+        .legend {
+            margin-top: 16px;
+        }
+        .legend-item {
+            display: flex;
+            align-items: center;
+            margin: 6px 0;
+            font-size: 0.85rem;
+        }
+        .legend-color {
+            width: 16px;
+            height: 16px;
+            border-radius: 4px;
+            margin-right: 8px;
+        }
+        .controls {
+            margin-top: 16px;
+            padding-top: 16px;
+            border-top: 1px solid #2a2a3a;
+        }
+        .controls label {
+            display: block;
+            margin-bottom: 6px;
+            font-size: 0.85rem;
+            color: #888;
+        }
+        .controls input[type="range"] {
+            width: 100%;
+        }
+        #stats {
+            margin-top: 12px;
+            font-size: 0.8rem;
+            color: #666;
+        }
+        .back-link {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            color: #667eea;
+            text-decoration: none;
+            padding: 10px 16px;
+            border: 1px solid #667eea;
+            border-radius: 8px;
+            transition: all 0.2s;
+        }
+        .back-link:hover {
+            background: #667eea;
+            color: #fff;
+        }
+    </style>
+</head>
+<body>
+    <div id="container"></div>
+    
+    <div id="info">
+        <h1>🧠 Topic Explorer</h1>
+        <p class="subtitle">2,000 email snippets embedded in 3D space using sentence transformers + UMAP</p>
+        
+        <div class="legend">
+            <div class="legend-item"><div class="legend-color" style="background: #FF6B6B"></div> Legal/Court</div>
+            <div class="legend-item"><div class="legend-color" style="background: #4ECDC4"></div> Financial</div>
+            <div class="legend-item"><div class="legend-color" style="background: #45B7D1"></div> Science/Research</div>
+            <div class="legend-item"><div class="legend-color" style="background: #96CEB4"></div> Travel/Logistics</div>
+            <div class="legend-item"><div class="legend-color" style="background: #DDA0DD"></div> Media/Press</div>
+            <div class="legend-item"><div class="legend-color" style="background: #F7DC6F"></div> Personal/Social</div>
+            <div class="legend-item"><div class="legend-color" style="background: #BB8FCE"></div> Business</div>
+            <div class="legend-item"><div class="legend-color" style="background: #85C1E9"></div> Political</div>
+        </div>
+        
+        <div class="controls">
+            <label>Point Size: <span id="sizeValue">3</span></label>
+            <input type="range" id="pointSize" min="1" max="10" value="3">
+        </div>
+        
+        <div id="stats">Loading data...</div>
+    </div>
+    
+    <div id="tooltip">
+        <div class="subject"></div>
+        <div class="sender"></div>
+        <div class="preview"></div>
+        <div class="cluster"></div>
+    </div>
+    
+    <a href="index.html" class="back-link">← Back to Index</a>
+    
+    <script>
+        const clusterColors = [
+            0xFF6B6B, 0x4ECDC4, 0x45B7D1, 0x96CEB4,
+            0xDDA0DD, 0xF7DC6F, 0xBB8FCE, 0x85C1E9
+        ];
+        
+        const clusterNames = [
+            "Legal/Court", "Financial", "Science/Research", "Travel/Logistics",
+            "Media/Press", "Personal/Social", "Business", "Political"
+        ];
+        
+        let scene, camera, renderer, controls;
+        let points, pointsData = [];
+        let raycaster, mouse;
+        const tooltip = document.getElementById('tooltip');
+        
+        async function init() {
+            // Scene setup
+            scene = new THREE.Scene();
+            scene.background = new THREE.Color(0x0a0a0f);
+            
+            camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
+            camera.position.set(15, 15, 15);
+            
+            renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setPixelRatio(window.devicePixelRatio);
+            document.getElementById('container').appendChild(renderer.domElement);
+            
+            controls = new THREE.OrbitControls(camera, renderer.domElement);
+            controls.enableDamping = true;
+            controls.dampingFactor = 0.05;
+            controls.autoRotate = true;
+            controls.autoRotateSpeed = 0.5;
+            
+            raycaster = new THREE.Raycaster();
+            raycaster.params.Points.threshold = 0.3;
+            mouse = new THREE.Vector2();
+            
+            // Add ambient light
+            scene.add(new THREE.AmbientLight(0xffffff, 0.5));
+            
+            // Load data
+            try {
+                const response = await fetch('data/expanded/topic_embeddings.json');
+                pointsData = await response.json();
+                createPoints();
+                document.getElementById('stats').textContent = 
+                    `${pointsData.length.toLocaleString()} documents visualized`;
+            } catch (e) {
+                document.getElementById('stats').textContent = 'Error loading data: ' + e.message;
+            }
+            
+            // Event listeners
+            window.addEventListener('resize', onWindowResize);
+            window.addEventListener('mousemove', onMouseMove);
+            document.getElementById('pointSize').addEventListener('input', updatePointSize);
+            
+            animate();
+        }
+        
+        function createPoints() {
+            const geometry = new THREE.BufferGeometry();
+            const positions = new Float32Array(pointsData.length * 3);
+            const colors = new Float32Array(pointsData.length * 3);
+            
+            // Normalize positions
+            let minX = Infinity, maxX = -Infinity;
+            let minY = Infinity, maxY = -Infinity;
+            let minZ = Infinity, maxZ = -Infinity;
+            
+            pointsData.forEach(p => {
+                minX = Math.min(minX, p.x); maxX = Math.max(maxX, p.x);
+                minY = Math.min(minY, p.y); maxY = Math.max(maxY, p.y);
+                minZ = Math.min(minZ, p.z); maxZ = Math.max(maxZ, p.z);
+            });
+            
+            const scale = 20 / Math.max(maxX - minX, maxY - minY, maxZ - minZ);
+            const centerX = (minX + maxX) / 2;
+            const centerY = (minY + maxY) / 2;
+            const centerZ = (minZ + maxZ) / 2;
+            
+            pointsData.forEach((p, i) => {
+                positions[i * 3] = (p.x - centerX) * scale;
+                positions[i * 3 + 1] = (p.y - centerY) * scale;
+                positions[i * 3 + 2] = (p.z - centerZ) * scale;
+                
+                const color = new THREE.Color(clusterColors[p.cluster % clusterColors.length]);
+                colors[i * 3] = color.r;
+                colors[i * 3 + 1] = color.g;
+                colors[i * 3 + 2] = color.b;
+            });
+            
+            geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+            geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+            
+            const material = new THREE.PointsMaterial({
+                size: 0.3,
+                vertexColors: true,
+                transparent: true,
+                opacity: 0.85,
+                sizeAttenuation: true
+            });
+            
+            points = new THREE.Points(geometry, material);
+            scene.add(points);
+        }
+        
+        function updatePointSize(e) {
+            const size = e.target.value / 10;
+            document.getElementById('sizeValue').textContent = e.target.value;
+            if (points) {
+                points.material.size = size;
+            }
+        }
+        
+        function onWindowResize() {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        }
+        
+        function onMouseMove(event) {
+            mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+            mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+            
+            raycaster.setFromCamera(mouse, camera);
+            
+            if (points) {
+                const intersects = raycaster.intersectObject(points);
+                
+                if (intersects.length > 0) {
+                    const idx = intersects[0].index;
+                    const data = pointsData[idx];
+                    
+                    tooltip.style.display = 'block';
+                    tooltip.style.left = event.clientX + 15 + 'px';
+                    tooltip.style.top = event.clientY + 15 + 'px';
+                    
+                    tooltip.querySelector('.subject').textContent = data.subject;
+                    tooltip.querySelector('.sender').textContent = '📤 ' + data.sender;
+                    tooltip.querySelector('.preview').textContent = data.text_preview;
+                    
+                    const clusterEl = tooltip.querySelector('.cluster');
+                    clusterEl.textContent = data.cluster_name;
+                    clusterEl.style.background = '#' + clusterColors[data.cluster].toString(16).padStart(6, '0');
+                    
+                    controls.autoRotate = false;
+                } else {
+                    tooltip.style.display = 'none';
+                    controls.autoRotate = true;
+                }
+            }
+        }
+        
+        function animate() {
+            requestAnimationFrame(animate);
+            controls.update();
+            renderer.render(scene, camera);
+        }
+        
+        init();
+    </script>
+</body>
+</html>

@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Timeline - Epstein Files</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #0a0a0f;
+            color: #e0e0e0;
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        h1 {
+            font-size: 2rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .subtitle { color: #888; margin-top: 6px; }
+        .back-link {
+            color: #667eea;
+            text-decoration: none;
+            padding: 10px 16px;
+            border: 1px solid #667eea;
+            border-radius: 8px;
+            transition: all 0.2s;
+        }
+        .back-link:hover {
+            background: #667eea;
+            color: #fff;
+        }
+        .chart-container {
+            background: #12121a;
+            border-radius: 16px;
+            padding: 30px;
+            margin-bottom: 30px;
+            border: 1px solid #2a2a3a;
+        }
+        .chart-title {
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+            color: #fff;
+        }
+        .controls {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+        }
+        .year-btn {
+            padding: 10px 18px;
+            background: #1a1a24;
+            border: 1px solid #2a2a3a;
+            border-radius: 8px;
+            color: #e0e0e0;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .year-btn:hover, .year-btn.active {
+            border-color: #667eea;
+            color: #667eea;
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        .stat-card {
+            background: #12121a;
+            border: 1px solid #2a2a3a;
+            border-radius: 12px;
+            padding: 20px;
+        }
+        .stat-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #667eea;
+        }
+        .stat-label {
+            color: #888;
+            margin-top: 6px;
+        }
+        .events-list {
+            background: #12121a;
+            border-radius: 16px;
+            padding: 30px;
+            border: 1px solid #2a2a3a;
+        }
+        .events-title {
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+            color: #fff;
+        }
+        .event-item {
+            display: flex;
+            gap: 16px;
+            padding: 16px 0;
+            border-bottom: 1px solid #1a1a24;
+        }
+        .event-item:last-child { border: none; }
+        .event-date {
+            color: #667eea;
+            font-family: monospace;
+            min-width: 100px;
+        }
+        .event-count {
+            background: #667eea;
+            color: #fff;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            min-width: 40px;
+            text-align: center;
+        }
+        .event-details {
+            flex: 1;
+        }
+        .event-subject {
+            color: #fff;
+            margin-bottom: 4px;
+        }
+        .event-sender {
+            color: #888;
+            font-size: 0.85rem;
+        }
+        .event-snippet {
+            color: #666;
+            font-size: 0.8rem;
+            margin-top: 6px;
+            line-height: 1.4;
+        }
+        #chartCanvas {
+            max-height: 400px;
+        }
+        .loading {
+            text-align: center;
+            padding: 60px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div>
+                <h1>📅 Communication Timeline</h1>
+                <p class="subtitle">Email activity over time extracted from the Epstein files</p>
+            </div>
+            <a href="index.html" class="back-link">← Back to Index</a>
+        </header>
+        
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-value" id="totalEmails">0</div>
+                <div class="stat-label">Total Emails</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="dateRange">—</div>
+                <div class="stat-label">Date Range</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="peakDay">—</div>
+                <div class="stat-label">Most Active Day</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="avgDaily">0</div>
+                <div class="stat-label">Avg Daily Emails</div>
+            </div>
+        </div>
+        
+        <div class="controls">
+            <button class="year-btn active" data-year="all">All Years</button>
+            <button class="year-btn" data-year="2015">2015</button>
+            <button class="year-btn" data-year="2016">2016</button>
+            <button class="year-btn" data-year="2017">2017</button>
+            <button class="year-btn" data-year="2018">2018</button>
+            <button class="year-btn" data-year="2019">2019</button>
+        </div>
+        
+        <div class="chart-container">
+            <h2 class="chart-title">📊 Email Volume Over Time</h2>
+            <canvas id="chartCanvas"></canvas>
+        </div>
+        
+        <div class="events-list">
+            <h2 class="events-title">📧 High-Activity Days</h2>
+            <div id="eventsList" class="loading">Loading timeline data...</div>
+        </div>
+    </div>
+    
+    <script>
+        let timelineData = [];
+        let chart = null;
+        let currentYear = 'all';
+        
+        async function loadData() {
+            try {
+                const response = await fetch('data/expanded/timeline.json');
+                timelineData = await response.json();
+                
+                // Calculate stats
+                const totalEmails = timelineData.reduce((sum, d) => sum + d.count, 0);
+                document.getElementById('totalEmails').textContent = totalEmails.toLocaleString();
+                
+                if (timelineData.length > 0) {
+                    const dates = timelineData.map(d => d.date);
+                    document.getElementById('dateRange').textContent = 
+                        `${dates[0]} — ${dates[dates.length - 1]}`;
+                    
+                    const peak = timelineData.reduce((max, d) => d.count > max.count ? d : max);
+                    document.getElementById('peakDay').textContent = 
+                        `${peak.date} (${peak.count})`;
+                    
+                    const avgDaily = totalEmails / timelineData.length;
+                    document.getElementById('avgDaily').textContent = avgDaily.toFixed(1);
+                }
+                
+                createChart();
+                showTopEvents();
+                
+            } catch (e) {
+                document.getElementById('eventsList').innerHTML = 
+                    '<div class="loading">Error loading data: ' + e.message + '</div>';
+            }
+        }
+        
+        function getFilteredData() {
+            if (currentYear === 'all') return timelineData;
+            return timelineData.filter(d => d.date.startsWith(currentYear));
+        }
+        
+        function createChart() {
+            const filtered = getFilteredData();
+            
+            // Aggregate by month for cleaner visualization
+            const monthlyData = {};
+            filtered.forEach(d => {
+                const month = d.date.substring(0, 7); // YYYY-MM
+                monthlyData[month] = (monthlyData[month] || 0) + d.count;
+            });
+            
+            const labels = Object.keys(monthlyData).sort();
+            const values = labels.map(l => monthlyData[l]);
+            
+            if (chart) chart.destroy();
+            
+            const ctx = document.getElementById('chartCanvas').getContext('2d');
+            chart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Emails',
+                        data: values,
+                        backgroundColor: 'rgba(102, 126, 234, 0.7)',
+                        borderColor: 'rgba(102, 126, 234, 1)',
+                        borderWidth: 1,
+                        borderRadius: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            backgroundColor: 'rgba(10, 10, 15, 0.95)',
+                            titleColor: '#667eea',
+                            bodyColor: '#e0e0e0',
+                            borderColor: '#2a2a3a',
+                            borderWidth: 1,
+                            padding: 12,
+                            callbacks: {
+                                title: (items) => {
+                                    const date = new Date(items[0].label + '-01');
+                                    return date.toLocaleDateString('en-US', { year: 'numeric', month: 'long' });
+                                },
+                                label: (item) => `${item.raw.toLocaleString()} emails`
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: { color: '#1a1a24' },
+                            ticks: { 
+                                color: '#888',
+                                maxRotation: 45,
+                                callback: function(val, idx) {
+                                    const label = this.getLabelForValue(val);
+                                    const date = new Date(label + '-01');
+                                    return date.toLocaleDateString('en-US', { year: '2-digit', month: 'short' });
+                                }
+                            }
+                        },
+                        y: {
+                            grid: { color: '#1a1a24' },
+                            ticks: { color: '#888' },
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
+        
+        function showTopEvents() {
+            const filtered = getFilteredData();
+            const topDays = [...filtered]
+                .sort((a, b) => b.count - a.count)
+                .slice(0, 20);
+            
+            if (topDays.length === 0) {
+                document.getElementById('eventsList').innerHTML = 
+                    '<div class="loading">No data for selected period</div>';
+                return;
+            }
+            
+            const html = topDays.map(day => {
+                const events = day.sample_events || [];
+                const eventHtml = events.map(e => `
+                    <div class="event-subject">${escapeHtml(e.subject)}</div>
+                    <div class="event-sender">From: ${escapeHtml(e.sender)}</div>
+                    ${e.snippet ? `<div class="event-snippet">${escapeHtml(e.snippet)}</div>` : ''}
+                `).join('');
+                
+                return `
+                    <div class="event-item">
+                        <div class="event-date">${day.date}</div>
+                        <div class="event-count">${day.count}</div>
+                        <div class="event-details">
+                            ${eventHtml || '<div class="event-subject" style="color: #666">No preview available</div>'}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+            
+            document.getElementById('eventsList').innerHTML = html;
+        }
+        
+        function escapeHtml(text) {
+            if (!text) return '';
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+        
+        // Event listeners
+        document.querySelectorAll('.year-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.year-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                currentYear = btn.dataset.year;
+                createChart();
+                showTopEvents();
+            });
+        });
+        
+        loadData();
+    </script>
+</body>
+</html>

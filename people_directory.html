@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>People Directory - Epstein Files</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #0a0a0f;
+            color: #e0e0e0;
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        h1 {
+            font-size: 2rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .subtitle { color: #888; margin-top: 6px; }
+        .back-link {
+            color: #667eea;
+            text-decoration: none;
+            padding: 10px 16px;
+            border: 1px solid #667eea;
+            border-radius: 8px;
+            transition: all 0.2s;
+        }
+        .back-link:hover {
+            background: #667eea;
+            color: #fff;
+        }
+        .controls {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+        }
+        .search-box {
+            flex: 1;
+            min-width: 250px;
+            padding: 12px 16px;
+            background: #1a1a24;
+            border: 1px solid #2a2a3a;
+            border-radius: 8px;
+            color: #e0e0e0;
+            font-size: 1rem;
+        }
+        .search-box:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        .filter-btn {
+            padding: 12px 20px;
+            background: #1a1a24;
+            border: 1px solid #2a2a3a;
+            border-radius: 8px;
+            color: #e0e0e0;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .filter-btn:hover, .filter-btn.active {
+            border-color: #667eea;
+            color: #667eea;
+        }
+        .stats-bar {
+            display: flex;
+            gap: 24px;
+            margin-bottom: 24px;
+            color: #888;
+            font-size: 0.9rem;
+        }
+        .stat-value { color: #667eea; font-weight: bold; }
+        .export-btns {
+            display: flex;
+            gap: 12px;
+        }
+        .export-btn {
+            padding: 8px 14px;
+            background: transparent;
+            border: 1px solid #4a4a5a;
+            border-radius: 6px;
+            color: #aaa;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: all 0.2s;
+        }
+        .export-btn:hover {
+            border-color: #667eea;
+            color: #667eea;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: #12121a;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        th {
+            background: #1a1a24;
+            padding: 14px 16px;
+            text-align: left;
+            font-weight: 600;
+            color: #aaa;
+            border-bottom: 1px solid #2a2a3a;
+            cursor: pointer;
+            user-select: none;
+        }
+        th:hover { color: #667eea; }
+        th.sorted { color: #667eea; }
+        th.sorted::after { content: ' ▼'; font-size: 0.7em; }
+        th.sorted.desc::after { content: ' ▲'; }
+        td {
+            padding: 12px 16px;
+            border-bottom: 1px solid #1a1a24;
+        }
+        tr:hover { background: #1a1a24; }
+        .name-cell {
+            font-weight: 500;
+            color: #fff;
+        }
+        .email-cell {
+            color: #667eea;
+            font-family: monospace;
+            font-size: 0.85rem;
+        }
+        .email-tag {
+            display: inline-block;
+            background: #1a1a24;
+            padding: 3px 8px;
+            border-radius: 4px;
+            margin: 2px 4px 2px 0;
+            border: 1px solid #2a2a3a;
+        }
+        .count-cell {
+            font-family: monospace;
+            color: #96CEB4;
+        }
+        .no-results {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+        #tableBody tr { transition: opacity 0.2s; }
+        .loading {
+            text-align: center;
+            padding: 60px;
+            color: #666;
+        }
+        @media (max-width: 768px) {
+            table { font-size: 0.85rem; }
+            th, td { padding: 10px 8px; }
+            .email-tag { font-size: 0.75rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div>
+                <h1>👥 People Directory</h1>
+                <p class="subtitle">Names and email addresses extracted from the Epstein files</p>
+            </div>
+            <a href="index.html" class="back-link">← Back to Index</a>
+        </header>
+        
+        <div class="controls">
+            <input type="text" id="searchInput" class="search-box" placeholder="Search names or emails...">
+            <button class="filter-btn" data-filter="all">All</button>
+            <button class="filter-btn" data-filter="email">With Email</button>
+            <button class="filter-btn" data-filter="top100">Top 100</button>
+        </div>
+        
+        <div class="stats-bar">
+            <div><span class="stat-value" id="totalPeople">0</span> people</div>
+            <div><span class="stat-value" id="withEmail">0</span> with email addresses</div>
+            <div><span class="stat-value" id="showingCount">0</span> showing</div>
+            <div style="flex: 1"></div>
+            <div class="export-btns">
+                <button class="export-btn" onclick="downloadCSV()">📥 CSV</button>
+                <button class="export-btn" onclick="downloadJSON()">📥 JSON</button>
+            </div>
+        </div>
+        
+        <table>
+            <thead>
+                <tr>
+                    <th data-sort="name" style="width: 25%">Name</th>
+                    <th data-sort="emails" style="width: 40%">Email Addresses</th>
+                    <th data-sort="mention_count" class="sorted">Mentions</th>
+                    <th data-sort="thread_count">Threads</th>
+                </tr>
+            </thead>
+            <tbody id="tableBody">
+                <tr><td colspan="4" class="loading">Loading data...</td></tr>
+            </tbody>
+        </table>
+    </div>
+    
+    <script>
+        let allData = [];
+        let filteredData = [];
+        let currentSort = { field: 'mention_count', desc: true };
+        let currentFilter = 'all';
+        
+        async function loadData() {
+            try {
+                const response = await fetch('data/expanded/people_directory.json');
+                allData = await response.json();
+                
+                document.getElementById('totalPeople').textContent = allData.length.toLocaleString();
+                document.getElementById('withEmail').textContent = 
+                    allData.filter(p => p.emails.length > 0).length.toLocaleString();
+                
+                applyFilters();
+            } catch (e) {
+                document.getElementById('tableBody').innerHTML = 
+                    '<tr><td colspan="4" class="no-results">Error loading data: ' + e.message + '</td></tr>';
+            }
+        }
+        
+        function applyFilters() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            
+            filteredData = allData.filter(person => {
+                // Search filter
+                if (searchTerm) {
+                    const matchesName = person.name.toLowerCase().includes(searchTerm);
+                    const matchesEmail = person.emails.some(e => e.includes(searchTerm));
+                    if (!matchesName && !matchesEmail) return false;
+                }
+                
+                // Category filter
+                if (currentFilter === 'email' && person.emails.length === 0) return false;
+                
+                return true;
+            });
+            
+            // Apply top 100 filter after search
+            if (currentFilter === 'top100') {
+                filteredData = filteredData.slice(0, 100);
+            }
+            
+            sortData();
+        }
+        
+        function sortData() {
+            filteredData.sort((a, b) => {
+                let valA = a[currentSort.field];
+                let valB = b[currentSort.field];
+                
+                if (currentSort.field === 'emails') {
+                    valA = a.emails.length;
+                    valB = b.emails.length;
+                }
+                if (typeof valA === 'string') {
+                    valA = valA.toLowerCase();
+                    valB = valB.toLowerCase();
+                }
+                
+                if (valA < valB) return currentSort.desc ? 1 : -1;
+                if (valA > valB) return currentSort.desc ? -1 : 1;
+                return 0;
+            });
+            
+            renderTable();
+        }
+        
+        function renderTable() {
+            document.getElementById('showingCount').textContent = filteredData.length.toLocaleString();
+            
+            if (filteredData.length === 0) {
+                document.getElementById('tableBody').innerHTML = 
+                    '<tr><td colspan="4" class="no-results">No results found</td></tr>';
+                return;
+            }
+            
+            // Only render first 500 for performance
+            const displayData = filteredData.slice(0, 500);
+            
+            const html = displayData.map(person => `
+                <tr>
+                    <td class="name-cell">${escapeHtml(person.name)}</td>
+                    <td class="email-cell">
+                        ${person.emails.map(e => `<span class="email-tag">${escapeHtml(e)}</span>`).join('') || '<span style="color: #555">—</span>'}
+                    </td>
+                    <td class="count-cell">${person.mention_count.toLocaleString()}</td>
+                    <td class="count-cell">${person.thread_count.toLocaleString()}</td>
+                </tr>
+            `).join('');
+            
+            document.getElementById('tableBody').innerHTML = html;
+            
+            if (filteredData.length > 500) {
+                document.getElementById('tableBody').innerHTML += 
+                    `<tr><td colspan="4" style="text-align: center; color: #666; padding: 20px;">
+                        Showing first 500 of ${filteredData.length.toLocaleString()} results. Use search to narrow down.
+                    </td></tr>`;
+            }
+        }
+        
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+        
+        function downloadCSV() {
+            const csv = ['Name,Emails,Mention Count,Thread Count'];
+            filteredData.forEach(p => {
+                csv.push(`"${p.name}","${p.emails.join('; ')}",${p.mention_count},${p.thread_count}`);
+            });
+            
+            const blob = new Blob([csv.join('\n')], { type: 'text/csv' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'epstein_people_directory.csv';
+            a.click();
+        }
+        
+        function downloadJSON() {
+            const blob = new Blob([JSON.stringify(filteredData, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'epstein_people_directory.json';
+            a.click();
+        }
+        
+        // Event listeners
+        document.getElementById('searchInput').addEventListener('input', 
+            debounce(() => applyFilters(), 200)
+        );
+        
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                currentFilter = btn.dataset.filter;
+                applyFilters();
+            });
+        });
+        
+        document.querySelectorAll('th[data-sort]').forEach(th => {
+            th.addEventListener('click', () => {
+                const field = th.dataset.sort;
+                if (currentSort.field === field) {
+                    currentSort.desc = !currentSort.desc;
+                } else {
+                    currentSort = { field, desc: true };
+                }
+                
+                document.querySelectorAll('th').forEach(t => {
+                    t.classList.remove('sorted', 'desc');
+                });
+                th.classList.add('sorted');
+                if (!currentSort.desc) th.classList.add('desc');
+                
+                sortData();
+            });
+        });
+        
+        function debounce(fn, delay) {
+            let timer;
+            return function() {
+                clearTimeout(timer);
+                timer = setTimeout(fn, delay);
+            };
+        }
+        
+        // Initialize
+        loadData();
+        document.querySelector('.filter-btn[data-filter="all"]').classList.add('active');
+    </script>
+</body>
+</html>
