@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Epstein Files - Relationship Graph</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #0a0a0f;
+            color: #e0e0e0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 40px 20px;
+        }
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .subtitle {
+            color: #888;
+            margin-bottom: 40px;
+            font-size: 1.1rem;
+        }
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 24px;
+            max-width: 900px;
+            width: 100%;
+        }
+        .card {
+            background: linear-gradient(145deg, #1a1a24 0%, #12121a 100%);
+            border: 1px solid #2a2a3a;
+            border-radius: 16px;
+            padding: 30px;
+            text-decoration: none;
+            color: inherit;
+            transition: all 0.3s ease;
+        }
+        .card:hover {
+            transform: translateY(-4px);
+            border-color: #667eea;
+            box-shadow: 0 20px 40px rgba(102, 126, 234, 0.15);
+        }
+        .card h2 {
+            font-size: 1.4rem;
+            margin-bottom: 12px;
+            color: #fff;
+        }
+        .card p {
+            color: #999;
+            line-height: 1.6;
+        }
+        .card .icon {
+            font-size: 2.5rem;
+            margin-bottom: 16px;
+        }
+        .stats {
+            margin-top: 50px;
+            display: flex;
+            gap: 40px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .stat {
+            text-align: center;
+        }
+        .stat-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #667eea;
+        }
+        .stat-label {
+            color: #666;
+            font-size: 0.9rem;
+        }
+        footer {
+            margin-top: 60px;
+            color: #555;
+            font-size: 0.85rem;
+        }
+        footer a { color: #667eea; }
+    </style>
+</head>
+<body>
+    <h1>Epstein Files</h1>
+    <p class="subtitle">Relationship Graph Analysis from DOJ Document Release</p>
+    
+    <div class="cards">
+        <a href="epstein_network.html" class="card">
+            <div class="icon">🕸️</div>
+            <h2>Network Graph</h2>
+            <p>Interactive force-directed graph showing connections between 147 key figures. Drag nodes, zoom, and explore relationships.</p>
+        </a>
+        
+        <a href="epstein_3d_threejs.html" class="card">
+            <div class="icon">🌌</div>
+            <h2>3D Embedding Space</h2>
+            <p>Three.js visualization showing people positioned by relationship similarity. Clusters reveal distinct social circles.</p>
+        </a>
+        
+        <a href="summary.md" class="card">
+            <div class="icon">📊</div>
+            <h2>Analysis Summary</h2>
+            <p>Key findings, top connected individuals, strongest relationships, and cluster analysis.</p>
+        </a>
+    </div>
+    
+    <div class="stats">
+        <div class="stat">
+            <div class="stat-value">2,798</div>
+            <div class="stat-label">People Identified</div>
+        </div>
+        <div class="stat">
+            <div class="stat-value">18,848</div>
+            <div class="stat-label">Relationships</div>
+        </div>
+        <div class="stat">
+            <div class="stat-value">8</div>
+            <div class="stat-label">Clusters</div>
+        </div>
+        <div class="stat">
+            <div class="stat-value">60K+</div>
+            <div class="stat-label">Documents Analyzed</div>
+        </div>
+    </div>
+    
+    <footer>
+        Data source: DOJ Epstein Files (Jan 2026) via <a href="https://github.com/yung-megafone/Epstein-Files">community archive</a>
+    </footer>
+</body>
+</html>
